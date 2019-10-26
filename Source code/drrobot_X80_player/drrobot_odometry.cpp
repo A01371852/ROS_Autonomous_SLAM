@@ -20,7 +20,7 @@ void Listener::callback(const drrobot_X80_player::MotorInfoArray::ConstPtr& drro
 {
 	//L_tim = drrobot_motor->motorInfos[0].header.stamp;
 	L_pos = drrobot_motor->motorInfos[0].encoder_pos;
-	L_dir = drrobot_motor->motorInfos[0].encoder_dir;
+	L_dir = -drrobot_motor->motorInfos[0].encoder_dir;
 	if(L_dir > 1)	L_dir = -1;
 
 	//R_tim = drrobot_motor->motorInfos[1].header.stamp;
@@ -46,8 +46,9 @@ int main(int argc, char** argv) {
 	double th = 0;
 
 	// wheels angular displacement (rad) and velocity (rad/s)
-	double oL, wL, tL_1 = 0.0;
-	double oR, wR, tR_1= 0.0;
+	double wL, tL_1 = 0.0;
+	double wR, tR_1 = 0.0;
+	int oL, oR = 0;
 	int L_pos_1 = listener.L_pos;
 	int R_pos_1 = listener.R_pos;
 	// wheels linear displacement (m) and velocity (m/s)
@@ -77,8 +78,8 @@ int main(int argc, char** argv) {
 	while (ros::ok()) {
 
 		// 1 -> forward; -1 -> backwards
-		ROS_INFO("\t L_pos: %d | L_dir: %d", listener.L_pos, listener.L_dir);
-		ROS_INFO("\t R_pos: %d | R_dir: %d", listener.R_pos, listener.R_dir);
+		//ROS_INFO("\t L_pos: %d | L_dir: %d", listener.L_pos, listener.L_dir);
+		//ROS_INFO("\t R_pos: %d | R_dir: %d", listener.R_pos, listener.R_dir);
 		//ROS_INFO("\n");
 		
 		// Left wheel
@@ -93,13 +94,13 @@ int main(int argc, char** argv) {
 		/*oR = listener.R_dir * (((listener.R_pos - R_pos_1) * (-listener.R_dir)) % max_Cnt) * pi_2 / encoderCnt;
 		dR += oR * wheelRadius;*/
 		//wR = oR / (listener.R_tim - tR_1);
-		oR -= listener.L_dir * (((listener.R_pos - R_pos_1) * (listener.R_dir)) % max_Cnt);
+		oR += listener.R_dir * (((listener.R_pos - R_pos_1) * (listener.R_dir)) % max_Cnt);
 		R_pos_1 = listener.R_pos;
 		//tR_1 = listener.R_tim;
 		
-		/*ROS_INFO("dL: %.1f | oL: %.1f", dL, oL);
-		ROS_INFO("dR: %.1f | oR: %.1f", dR, oR);
-		ROS_INFO("\n-------------------\n");*/
+		ROS_INFO("dL: %.1f | oL: %d | dirL: %d", dL, oL, listener.L_dir);
+		ROS_INFO("dR: %.1f | oR: %d | dirR: %d", dR, oR, listener.R_dir);
+		ROS_INFO("\n-------------------\n");
 		
 /*
 		double vx= -(listener.vxo);
