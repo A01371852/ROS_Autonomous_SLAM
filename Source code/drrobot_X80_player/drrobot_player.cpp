@@ -80,7 +80,6 @@ Publishes to (name / type):
 
 #include <ros/ros.h>
 #include "tf/transform_broadcaster.h"
-#include <tf/transform_listener.h>
 
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
@@ -101,7 +100,7 @@ Publishes to (name / type):
 #define MOTOR_NUM       6
 
 //for servo ini value, you can modify the value based on your robot
-#define SERVO0 3300
+#define SERVO0 3500
 #define SERVO1 3500
 
 using namespace std;

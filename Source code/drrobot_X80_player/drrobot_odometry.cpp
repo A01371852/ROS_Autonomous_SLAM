@@ -9,21 +9,24 @@
 class Listener
 {
 	public:
-		int L_pos, L_dir;
-		int R_pos, R_dir;
-		//double ros::Time L_tim, R_tim;
+		int L_pos;
+		int L_dir;
+		int R_pos;
+		int R_dir;
+		double L_tim;
+		double R_tim;
 
 	void callback(const drrobot_X80_player::MotorInfoArray::ConstPtr& drrobot_motor);
 };
 
 void Listener::callback(const drrobot_X80_player::MotorInfoArray::ConstPtr& drrobot_motor)
 {
-	//L_tim = drrobot_motor->motorInfos[0].header.stamp;
+	L_tim = drrobot_motor->motorInfos[0].header.stamp.toSec();
 	L_pos = drrobot_motor->motorInfos[0].encoder_pos;
 	L_dir = -drrobot_motor->motorInfos[0].encoder_dir;
 	if(L_dir > 1)	L_dir = -1;
 
-	//R_tim = drrobot_motor->motorInfos[1].header.stamp;
+	R_tim = drrobot_motor->motorInfos[1].header.stamp.toSec();
 	R_pos = drrobot_motor->motorInfos[1].encoder_pos;
 	R_dir = drrobot_motor->motorInfos[1].encoder_dir;
 	if(R_dir > 1)	R_dir = -1;
@@ -45,15 +48,21 @@ int main(int argc, char** argv) {
 	double y = 0.0;
 	double th = 0;
 
-	// wheels angular displacement (rad) and velocity (rad/s)
-	double wL, tL_1 = 0.0;
-	double wR, tR_1 = 0.0;
-	int oL, oR = 0;
+	// wheels angular displacement (rad)
+	int oL = 0;
+	int oR = 0;
 	int L_pos_1 = listener.L_pos;
 	int R_pos_1 = listener.R_pos;
-	// wheels linear displacement (m) and velocity (m/s)
-	double dL, vL = 0.0;
-	double dR, vR = 0.0;
+	// wheels linear displacement (m)
+	double dL = 0.0;
+	double dR = 0.0;
+	// wheels angular velocity (m)
+	double wL = 0.0;
+	double wR = 0.0;
+	double L_tim_1 = listener.L_tim;
+	double R_tim_1 = listener.R_tim;
+	// delay counter
+	int delayCount = 0;
 
 	ros::Time current_time;
 	ros::Time last_time;
@@ -61,7 +70,7 @@ int main(int argc, char** argv) {
 	last_time = ros::Time::now();
 
 	tf::TransformBroadcaster broadcaster;
-	ros::Rate loop_rate(20);
+	ros::Rate loop_rate(5);
 
 	const double degree		= M_PI/180;
 	const double pi_2		= 2*M_PI;
@@ -77,31 +86,43 @@ int main(int argc, char** argv) {
 
 	while (ros::ok()) {
 
-		// 1 -> forward; -1 -> backwards
-		//ROS_INFO("\t L_pos: %d | L_dir: %d", listener.L_pos, listener.L_dir);
-		//ROS_INFO("\t R_pos: %d | R_dir: %d", listener.R_pos, listener.R_dir);
-		//ROS_INFO("\n");
-		
-		// Left wheel
-		/*oL = listener.L_dir * (((listener.L_pos - L_pos_1) * (-listener.L_dir)) % max_Cnt) * pi_2 / encoderCnt;
-		dL += oL * wheelRadius;*/
-		//wL = oL / (listener.L_tim - tL_1);
-		oL -= listener.L_dir * (((listener.L_pos - L_pos_1) * (listener.L_dir)) % max_Cnt);
-		L_pos_1 = listener.L_pos;
-		//tL_1 = listener.L_tim;
-		
-		// Right wheel
-		/*oR = listener.R_dir * (((listener.R_pos - R_pos_1) * (-listener.R_dir)) % max_Cnt) * pi_2 / encoderCnt;
-		dR += oR * wheelRadius;*/
-		//wR = oR / (listener.R_tim - tR_1);
-		oR += listener.R_dir * (((listener.R_pos - R_pos_1) * (listener.R_dir)) % max_Cnt);
-		R_pos_1 = listener.R_pos;
-		//tR_1 = listener.R_tim;
-		
-		ROS_INFO("dL: %.1f | oL: %d | dirL: %d", dL, oL, listener.L_dir);
-		ROS_INFO("dR: %.1f | oR: %d | dirR: %d", dR, oR, listener.R_dir);
-		ROS_INFO("\n-------------------\n");
-		
+		if (delayCount < 10)
+		{
+			delayCount++;
+			L_pos_1 = listener.L_pos;
+			R_pos_1 = listener.R_pos;
+			L_tim_1 = listener.L_tim;
+			R_tim_1 = listener.R_tim;
+			oL = 0;
+			oR = 0;
+			ROS_INFO("%d", listener.L_pos-L_pos_1);
+		}
+		else 
+		{		
+			// 1 -> forward; -1 -> backwards
+			/*ROS_INFO("\t L_pos: %d | L_dir: %d", listener.L_pos, listener.L_dir);
+			ROS_INFO("\t R_pos: %d | R_dir: %d", listener.R_pos, listener.R_dir);
+			ROS_INFO("\n");*/
+			
+			// Left wheel
+			oL = listener.L_dir * ((listener.L_pos - L_pos_1) * (listener.L_dir) % max_Cnt);
+			dL -= oL * wheelRadius * pi_2 / encoderCnt;
+			wL = oL / (listener.L_tim - L_tim_1);
+			L_pos_1 = listener.L_pos;
+			L_tim_1 = listener.L_tim;
+			
+			// Right wheel
+			oR = listener.R_dir * ((listener.R_pos - R_pos_1) * (listener.R_dir) % max_Cnt);
+			dR += oR * wheelRadius * pi_2 / encoderCnt;
+			wR = oR / (listener.R_tim - R_tim_1);
+			R_pos_1 = listener.R_pos;
+			R_tim_1 = listener.R_tim;
+			
+			ROS_INFO("time: %.2f", listener.L_tim);
+			ROS_INFO("dL: %.2f | wL: %.2f | dirL: %d", dL, wL, listener.L_dir);
+			ROS_INFO("dR: %.2f | wR: %.2f | dirR: %d", dR, wR, listener.R_dir);
+			ROS_INFO("\n-------------------\n");
+		}
 /*
 		double vx= -(listener.vxo);
 		double vth= -((1.5)*(listener.vtho));
@@ -155,5 +176,6 @@ int main(int argc, char** argv) {
 
 		loop_rate.sleep();
 	}
+
 	return 0;
 }
