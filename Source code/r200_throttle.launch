@@ -1,0 +1,41 @@
+<launch>
+  <!-- 
+       $ roslaunch r200_throttle.launch fps:=?
+       Based on:
+       http://wiki.ros.org/rtabmap_ros/Tutorials/HandHeldMapping
+       http://wiki.ros.org/rtabmap_ros/Tutorials/RemoteMapping
+  -->
+
+  <include file="$(find realsense_camera)/launch/r200_nodelet_rgbd.launch"/>
+
+  <arg name="rate"  default="10"/>
+  <arg name="cloud_to_depth"  default="true"/> <!-- approach 2 from handheld tutorial above for r200 -->
+
+  <!-- Use same nodelet used by realsense -->
+  <group ns="camera">
+    <node pkg="nodelet" type="nodelet" name="throttling_nodelet_manager" args="manager" output="screen"/>
+    <node if="$(arg cloud_to_depth)" pkg="nodelet" type="nodelet" name="pointcloud_to_depthimage" args="load rtabmap_ros/pointcloud_to_depthimage throttling_nodelet_manager" output="screen">
+      <remap from="cloud"       to="depth/points"/>
+      <remap from="camera_info" to="rgb/camera_info"/>
+      <remap from="image_raw"   to="depth/points/image_raw"/>
+      <remap from="image"       to="depth/points/image"/>
+
+      <param name="approx"          value="false"/>
+      <param name="fill_holes_size" value="2"/>
+    </node>
+
+    <node pkg="nodelet" type="nodelet" name="data_throttle" args="load rtabmap_ros/data_throttle throttling_nodelet_manager" output="screen">
+      <param name="rate" type="double" value="$(arg rate)"/>
+      <param name="approx_sync" type="bool" value="false"/>
+
+      <remap from="rgb/image_in"       to="rgb/image_rect_color"/>
+      <remap from="rgb/camera_info_in" to="rgb/camera_info"/>
+      <remap     if="$(arg cloud_to_depth)" from="depth/image_in" to="depth/points/image_raw"/>
+      <remap unless="$(arg cloud_to_depth)" from="depth/image_in" to="depth_registered/sw_registered/image_rect_raw"/>
+
+      <remap from="rgb/image_out"       to="data_throttled_image"/>
+      <remap from="depth/image_out"     to="data_throttled_image_depth"/>
+      <remap from="rgb/camera_info_out" to="data_throttled_camera_info"/>
+    </node>
+  </group>      
+</launch>

@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
 			R_tim_1 = listener.R_tim;
 			oL = 0;
 			oR = 0;
-			ROS_INFO("%d", listener.L_pos-L_pos_1);
+			//ROS_INFO("%d", listener.L_pos-L_pos_1);
 		}
 		else 
 		{		
@@ -114,31 +114,46 @@ int main(int argc, char** argv) {
 			ROS_INFO("\n");*/
 			
 			// Left wheel
-			oL = -listener.L_dir * (((listener.L_pos - L_pos_1) * (listener.L_dir)) % max_Cnt);
+			if(abs(listener.L_pos - L_pos_1) < 100)
+				oL = -listener.L_dir * (((listener.L_pos - L_pos_1) * (listener.L_dir)) % max_Cnt);
+			else
+			{
+				oL = 0.0;
+				ROS_INFO("Encoder error!");
+			}
 			dL = oL * wheelRadius * 2.0 * M_PI / encoderCnt;
-			sL += dL;
+			//sL += dL;
 			if (listener.L_tim != L_tim_1)
 				vL = dL / (listener.L_tim - L_tim_1);
 			L_pos_1 = listener.L_pos;
 			L_tim_1 = listener.L_tim;
 			
 			// Right wheel
-			oR = listener.R_dir * (((listener.R_pos - R_pos_1) * (listener.R_dir)) % max_Cnt);
+			if(abs(listener.R_pos - R_pos_1) < 100)
+				oR = listener.R_dir * (((listener.R_pos - R_pos_1) * (listener.R_dir)) % max_Cnt);
+			else
+			{
+				oR = 0.0;
+				ROS_INFO("Encoder error!");
+			}
 			dR = oR * wheelRadius * 2.0 * M_PI / encoderCnt;
-			sR += dR;
+			//sR += dR;
 			if (listener.R_tim != R_tim_1)
+			{
 				vR = dR / (listener.R_tim - R_tim_1);
+				o = (dR - dL) / (2.0 * wheelDis);
+			}
 			R_pos_1 = listener.R_pos;
 			R_tim_1 = listener.R_tim;
 			
-			ROS_INFO("\n-------------------\n");
+			/*ROS_INFO("\n-------------------\n");
 			ROS_INFO("time: %.2f", listener.L_tim);
 			ROS_INFO("sL: %.2f | vL: %.2f | dirL: %d", sL, vL, listener.L_dir);
-			ROS_INFO("sR: %.2f | vR: %.2f | dirR: %d", sR, vR, listener.R_dir);
+			ROS_INFO("sR: %.2f | vR: %.2f | dirR: %d", sR, vR, listener.R_dir);*/
 
 			// Linear and angular displacement of differential drive robot
 			d = (dR + dL) / 2.0;
-			o = (dR - dL) / (2.0 * wheelDis);
+			//o = (dR - dL) / (2.0 * wheelDis);
 
 			// Linear and angular velocities of differential drive robot
 			v = (vR + vL) / 2.0;
