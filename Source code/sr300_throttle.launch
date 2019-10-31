@@ -3,27 +3,20 @@
 
   <include file="$(find realsense2_camera)/launch/rs_camera.launch"/>
 
-  <arg name="external_manager"  default="false"/>
-  <arg name="manager"           default="realsense2_camera_manager"/>
   <arg name="rate"              default="10"/>
-  <arg name="aprox_sync"        default="true"/>
+  <arg name="approx_sync"        default="true"/>
   <arg name="filters"           default="pointcloud"/>
 
   <!-- Use same nodelet used by realsense -->
   <group ns="camera">
-    <node unless="$(arg external_manager)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="screen"/>
-    <node pkg="nodelet" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory $(arg manager)">
-      <remap from="rgb/image"        to="color/image_raw"/>
-      <remap from="depth/image"      to="depth/image_rect_raw "/>
-      <remap from="rgb/camera_info"  to="color/camera_info"/>
-    </node>
+    <node pkg="nodelet" type="nodelet" name="throttling_nodelet_manager" args="manager" output="screen"/>
 
     <node pkg="nodelet" type="nodelet" name="data_throttle" args="load rtabmap_ros/data_throttle throttling_nodelet_manager" output="screen">
       <param name="rate" type="double" value="$(arg rate)"/>
       <param name="approx_sync" type="bool" value="$(arg approx_sync)"/>
 
       <remap from="rgb/image_in"        to="color/image_raw"/>
-      <remap from="depth/image_in"      to="depth/image_rect_raw "/>
+      <remap from="depth/image_in"      to="depth/image_rect_raw"/>
       <remap from="rgb/camera_info_in"  to="color/camera_info"/>
 
       <remap from="rgb/image_out"       to="data_throttled_image"/>
