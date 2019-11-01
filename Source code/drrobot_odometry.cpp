@@ -139,10 +139,7 @@ int main(int argc, char** argv) {
 			dR = oR * wheelRadius * 2.0 * M_PI / encoderCnt;
 			//sR += dR;
 			if (listener.R_tim != R_tim_1)
-			{
 				vR = dR / (listener.R_tim - R_tim_1);
-				o = (dR - dL) / (2.0 * wheelDis);
-			}
 			R_pos_1 = listener.R_pos;
 			R_tim_1 = listener.R_tim;
 			
@@ -154,6 +151,7 @@ int main(int argc, char** argv) {
 			// Linear and angular displacement of differential drive robot
 			d = (dR + dL) / 2.0;
 			//o = (dR - dL) / (2.0 * wheelDis);
+			o = (dR - dL) / wheelDis;
 
 			// Linear and angular velocities of differential drive robot
 			v = (vR + vL) / 2.0;
