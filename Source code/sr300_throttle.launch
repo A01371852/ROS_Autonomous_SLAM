@@ -1,7 +1,7 @@
 <launch>
   <!-- $ roslaunch sr300_throttle.launch rate:=? -->
 
-  <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 0 base_footprint camera_link 10"/>
+  <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 0 base_link camera_link 1"/>
 
   <include file="$(find realsense2_camera)/launch/rs_rgbd.launch"/>
 
