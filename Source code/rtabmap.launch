@@ -1,0 +1,20 @@
+<launch>
+
+    <arg name="queue_size"  default="25"/>
+    <arg name="compressed"  default="true"/>
+
+    <include file="$(find rtabmap_ros)/launch/rtabmap.launch">
+
+        <arg name="rgb_topic"           value="/camera/data_throttled_image"/>
+        <arg name="depth_topic"         value="/camera/data_throttled_image_depth"/>
+        <arg name="camera_info_topic"   value="/camera/data_throttled_camera_info"/>
+        <arg name="approx_sync"         value="true"/>
+        <arg name="visual_odometry"     value="false"/>
+        <arg name="odom_topic"          value="/odom"/>
+        <arg name="compressed"          value="$(arg compressed)"/>
+        <arg name="queue_size"          value="$(arg queue_size)"/>
+        <arg name="rtabmap_args"        value="--delete_db_on_start"/>
+
+    </include>
+
+</launch>

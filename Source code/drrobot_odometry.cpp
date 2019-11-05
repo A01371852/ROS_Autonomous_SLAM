@@ -1,6 +1,4 @@
-#include <string>
 #include <ros/ros.h>
-#include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <drrobot_X80_player/MotorInfo.h>
@@ -150,7 +148,6 @@ int main(int argc, char** argv) {
 
 			// Linear and angular displacement of differential drive robot
 			d = (dR + dL) / 2.0;
-			//o = (dR - dL) / (2.0 * wheelDis);
 			o = (dR - dL) / wheelDis;
 
 			// Linear and angular velocities of differential drive robot
@@ -171,15 +168,19 @@ int main(int argc, char** argv) {
 
 			// Update transform
 			odom_trans.header.stamp = ros::Time::now(); 
+			odom_trans.header.frame_id = "odom";
+    		odom_trans.child_frame_id = "base_link";
 			odom_trans.transform.translation.x = x; 
 			odom_trans.transform.translation.y = y; 
 			odom_trans.transform.translation.z = 0.0;
 			odom_trans.transform.rotation = odom_quat;
+			// Send transform
+			broadcaster.sendTransform(odom_trans);
 
 			// Filling the odometry
 			odom.header.stamp = ros::Time::now();
 			odom.header.frame_id = "odom";
-			odom.child_frame_id = "base_footprint";
+    		odom.child_frame_id = "base_link";
 
 			// Position
 			odom.pose.pose.position.x = x;
@@ -190,13 +191,8 @@ int main(int argc, char** argv) {
 			// Velocity
 			odom.twist.twist.linear.x = vx;
 			odom.twist.twist.linear.y = vy;
-			odom.twist.twist.linear.z = 0.0;
-			odom.twist.twist.angular.x = 0.0; // roll
-			odom.twist.twist.angular.y = 0.0; // pitch
-			odom.twist.twist.angular.z = w;	  // yaw
-
-			// Publishing tf and odometry
-			broadcaster.sendTransform(odom_trans);
+			odom.twist.twist.angular.z = w;	// yaw
+			// Publish odometry
 			odom_pub.publish(odom);
 		}
 
