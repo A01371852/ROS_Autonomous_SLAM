@@ -1,11 +1,13 @@
 <launch>
   <!-- $ roslaunch sr300_throttle.launch rate:=? -->
 
-  <include file="$(find realsense2_camera)/launch/rs_camera.launch"/>
+  <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 0 base_footprint camera_link 10"/>
 
-  <arg name="rate"              default="10"/>
+  <include file="$(find realsense2_camera)/launch/rs_rgbd.launch"/>
+
+  <arg name="rate"              default="5"/>
   <arg name="approx_sync"        default="true"/>
-  <arg name="filters"           default="pointcloud"/>
+  <!-- <arg name="filters"           default="pointcloud"/> -->
 
   <!-- Use same nodelet used by realsense -->
   <group ns="camera">
@@ -14,14 +16,15 @@
     <node pkg="nodelet" type="nodelet" name="data_throttle" args="load rtabmap_ros/data_throttle throttling_nodelet_manager" output="screen">
       <param name="rate" type="double" value="$(arg rate)"/>
       <param name="approx_sync" type="bool" value="$(arg approx_sync)"/>
+      <param name="_image_transport"  value="compressedDepth"/>
 
       <remap from="rgb/image_in"        to="color/image_raw"/>
-      <remap from="depth/image_in"      to="depth/image_rect_raw"/>
+      <remap from="depth/image_in"      to="aligned_depth_to_color/image_raw"/>
       <remap from="rgb/camera_info_in"  to="color/camera_info"/>
 
       <remap from="rgb/image_out"       to="data_throttled_image"/>
       <remap from="depth/image_out"     to="data_throttled_image_depth"/>
       <remap from="rgb/camera_info_out" to="data_throttled_camera_info"/>
     </node>
-  </group>      
+  </group>
 </launch>
