@@ -77,6 +77,7 @@ Publishes to (name / type):
 #define KEYCODE_A_CAP 0x41
 #define KEYCODE_S_CAP 0x53
 #define KEYCODE_D_CAP 0x44
+#define KEYCODE_SPACE 0x20
 
 
 
@@ -130,8 +131,8 @@ int main(int argc, char** argv)
 void DrRobotKeyboardTeleopNode::keyboardLoop()
 {
     char c;
-    double maxVel = 1.0;
-    double maxTurn = 1.0;
+    double maxVel = 0.0;
+    double maxTurn = 0.0;
     bool dirty = false;
 
 
@@ -185,51 +186,58 @@ void DrRobotKeyboardTeleopNode::keyboardLoop()
         switch(c)
         {
             case KEYCODE_W:
-                maxVel = -0.05;
-                maxTurn = 0;
-                dirty = true;
-                break;
-            case KEYCODE_S:
                 maxVel = 0.05;
                 maxTurn = 0;
-                dirty = true;
+                dirty = false;
+                break;
+            case KEYCODE_S:
+                maxVel = -0.05;
+                maxTurn = 0;
+                dirty = false;
                 break;
             case KEYCODE_A:
                 maxVel = 0;
-                maxTurn = -0.1;
-                dirty = true;
+                maxTurn = 0.1;
+                dirty = false;
                 break;
             case KEYCODE_D:
                 maxVel = 0;
-                maxTurn = 0.1;
-                dirty = true;
+                maxTurn = -0.1;
+                dirty = false;
                 break;
 
             case KEYCODE_W_CAP:
-                maxVel = -0.1;
-                maxTurn = 0;
-                dirty = true;
-                break;
-            case KEYCODE_S_CAP:
                 maxVel = 0.1;
                 maxTurn = 0;
-                dirty = true;
+                dirty = false;
+                break;
+            case KEYCODE_S_CAP:
+                maxVel = -0.1;
+                maxTurn = 0;
+                dirty = false;
                 break;
             case KEYCODE_A_CAP:
                 maxVel = 0;
-                maxTurn = -0.2;
-                dirty = true;
+                maxTurn = 0.2;
+                dirty = false;
                 break;
             case KEYCODE_D_CAP:
                 maxVel = 0;
-                maxTurn = 0.2;
-                dirty = true;
+                maxTurn = -0.2;
+                dirty = false;
+                break;
+
+            case KEYCODE_SPACE:
+                maxVel = 0.0;
+                maxTurn = 0.0;
+                dirty = false;
                 break;
 
             default:
-                maxTurn = 0;
-                maxTurn = 0;
+                maxVel = 0.0;
+                maxTurn = 0.0;
                 dirty = false;
+                break;
         }
 
         cmdvel_.linear.x = maxVel;

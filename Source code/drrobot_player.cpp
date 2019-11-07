@@ -99,7 +99,12 @@ Publishes to (name / type):
 #define US_NUM          6
 #define MOTOR_NUM       6
 
-//for servo ini value, you can modify the value based on your robot
+// for PID motor velocity control
+#define KP 1
+#define KD 0
+#define KI 0
+
+// for servo ini value, you can modify the value based on your robot
 #define SERVO0 3100
 #define SERVO1 3500
 
@@ -242,6 +247,11 @@ public:
         drrobotMotionDriver_->openNetwork(robotConfig1_.robotIP,robotConfig1_.portNum);
         cmd_vel_sub_ = node_.subscribe<geometry_msgs::Twist>("drrobot_cmd_vel", 1, boost::bind(&DrRobotPlayerNode::cmdVelReceived, this, _1));
         
+        /*ROS_INFO("Left wheel PID values set to: [%d,%d,%d]", KP, KI, KD);
+        drrobotMotionDriver_->setMotorVelocityCtrlPID(0, KP, KD, KI);
+        ROS_INFO("Right wheel PID  values set to: [%d,%d,%d]", KP, KI, KD);
+        drrobotMotionDriver_->setMotorVelocityCtrlPID(1, KP, KD, KI);*/
+
         //ROS_INFO("Servos sent to default position: [%d, %d]", SERVO0,SERVO1);
         //drrobotMotionDriver_->sendServoCtrlAllCmd(SERVO0, SERVO1, NOCONTROL, NOCONTROL, NOCONTROL, NOCONTROL);
 
@@ -259,12 +269,12 @@ public:
 
     void cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel)
     {
-      double g_vel = cmd_vel->linear.x;
+      double g_vel = - cmd_vel->linear.x; // ?
       double t_vel = cmd_vel->angular.z;
       if (robotConfig1_.boardType != Jaguar)
       {
-        double leftWheel = (2 * g_vel - t_vel* wheelDis_) / (2 * wheelRadius_);
-        double rightWheel = (t_vel* wheelDis_ + 2 * g_vel) / (2 * wheelRadius_);
+        double leftWheel = (2 * g_vel + t_vel* wheelDis_) / (2 * wheelRadius_);
+        double rightWheel = (2 * g_vel - t_vel* wheelDis_) / (2 * wheelRadius_);
 
         int leftWheelCmd = motorDir_ * leftWheel * encoderOneCircleCnt_ / ( 2* 3.1415927);
         int rightWheelCmd = - motorDir_ * rightWheel * encoderOneCircleCnt_ / ( 2* 3.1415927);

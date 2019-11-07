@@ -4,6 +4,9 @@
     <arg name="compressed"  default="true"/>
 
     <include file="$(find rtabmap_ros)/launch/rtabmap.launch">
+    
+        <arg name="rviz"                value="true"/>
+        <arg name="rtabmapviz"          value="false"/>
 
         <arg name="rgb_topic"           value="/camera/data_throttled_image"/>
         <arg name="depth_topic"         value="/camera/data_throttled_image_depth"/>

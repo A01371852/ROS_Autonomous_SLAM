@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
 	const int max_Cnt		= 32768;	// Max ticks count (32767 = -1)
 
 	// Loop rate
-	ros::Rate loop_rate(20);	// 20Hz
+	ros::Rate loop_rate(5);	// 5Hz
 
 	while (ros::ok()) {
 
