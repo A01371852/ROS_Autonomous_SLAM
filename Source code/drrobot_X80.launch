@@ -1,9 +1,8 @@
 <launch>
     <!--rosrun drrobot_X80_player drrobot_X80_player_node-->
-    <node pkg="drrobot_X80_player"  type="drrobot_X80_player_node"  name=""/>
+    <node pkg="drrobot_X80_player" type="drrobot_X80_player_node" name="player_node"/>
     <!--rosrun drrobot_X80_player drrobot_X80_odometry_node-->
-    <node pkg="drrobot_X80_player"  type="drrobot_X80_odometry_node"    name=""/>
+    <node pkg="drrobot_X80_player" type="drrobot_X80_odometry_node" name="odometry_node"/>
     <!--rosrun drrobot_X80_player drrobot_X80_keyboard_teleop_node-->
-    <node pkg="drrobot_X80_player"  type="drrobot_X80_keyboard_teleop_node" name=""/>
-
+    <node pkg="drrobot_X80_player" type="drrobot_X80_keyboard_teleop_node" name="keyboard_teleop_node"/>
 </launch>
