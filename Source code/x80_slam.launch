@@ -1,0 +1,65 @@
+<launch>
+
+    <!-- DrRobotX80 -->
+    <group ns="drrobot_X80">
+        <!--rosrun drrobot_X80_player drrobot_X80_player_node-->
+        <node pkg="drrobot_X80_player" type="drrobot_X80_player_node" name="player_node"/>
+        <!--rosrun drrobot_X80_player drrobot_X80_odometry_node-->
+        <node pkg="drrobot_X80_player" type="drrobot_X80_odometry_node" name="odometry_node"/>
+        <!--rosrun drrobot_X80_player drrobot_X80_keyboard_teleop_node-->
+        <node pkg="drrobot_X80_player" type="drrobot_X80_keyboard_teleop_node" name="keyboard_teleop_node"/>
+    </group>
+    
+    <!-- RTAB-Map -->
+    <arg name="queue_size"  default="25"/>
+    <include file="$(find rtabmap_ros)/launch/rtabmap.launch">
+        <!-- Use RViz for visualization -->
+        <arg name="rviz"                value="true"/>
+        <arg name="rtabmapviz"          value="false"/>
+        <!-- Use RGBD_relay -->
+        <arg name="subscribe_rgbd"      value="true"/>
+        <arg name="rgbd_topic"          value="/camera/rgbd_image"/>
+        <arg name="compressed"          value="true"/>
+        <arg name="approx_sync"         value="true"/>
+        <!-- Use external odometry -->
+        <arg name="visual_odometry"     value="false"/>
+        <arg name="odom_topic"          value="/drrobot_X80/odom"/>
+        <!-- RTAB-Map args-->
+        <arg name="queue_size"          value="$(arg queue_size)"/>
+        <arg name="rtabmap_args"        value="--delete_db_on_start"/>
+        <arg name="rviz_cfg"            value="~/catkin_ws/x80_slam.rviz"/>
+    </include>
+
+    <!-- RGBD to LaserScan -->
+    <node respawn="true" pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="laserscan">
+        <remap from="image"        to="/voxel_cloud"/>
+        <remap from="camera_info"  to="/camera/color/camera_info"/>
+    </node>
+    
+    <!-- Navigation Stack -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+	    <rosparam file="$(find X80_navigation)/sg_costmap_common_params_x80.yaml" command="load" ns="global_costmap" />
+	    <rosparam file="$(find X80_navigation)/sg_costmap_common_params_x80.yaml" command="load" ns="local_costmap" />
+	    <rosparam file="$(find X80_navigation)/sg_local_costmap_params.yaml" command="load" />
+	    <rosparam file="$(find X80_navigation)/sg_global_costmap_params.yaml" command="load" />
+	    <rosparam file="$(find X80_navigation)/base_local_planner_params.yaml" command="load" />
+	    <param name="base_global_planner" type="string" value=" navfn/NavfnROS" />
+	    <param name="controller_frequency" type="double" value="6.0" />
+    </node>
+    
+    <node pkg="gmapping" type="slam_gmapping" respawn="false" name="slam_gmapping" output="screen">
+        <param name="map_update_interval" value="2.0"/>
+        <param name="maxUrange" value="6.0"/>
+        <param name="iterations" value="1"/>
+        <param name="linearUpdate" value="0.25"/>
+        <param name="angularUpdate" value="0.262"/>
+        <param name="temporalUpdate" value="-1.0"/>
+        <param name="particles" value="300"/>
+        <param name="xmin" value="-50.0"/>
+        <param name="ymin" value="-50.0"/>
+        <param name="xmax" value="50.0"/>
+        <param name="ymax" value="50.0"/>
+        <param name="base_link" value="base_link"/>
+    </node>
+
+</launch>
