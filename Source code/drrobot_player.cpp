@@ -245,7 +245,7 @@ public:
       int res = -1;
  
         drrobotMotionDriver_->openNetwork(robotConfig1_.robotIP,robotConfig1_.portNum);
-        cmd_vel_sub_ = node_.subscribe<geometry_msgs::Twist>("drrobot_cmd_vel", 1, boost::bind(&DrRobotPlayerNode::cmdVelReceived, this, _1));
+        cmd_vel_sub_ = node_.subscribe<geometry_msgs::Twist>("cmd_vel", 1, boost::bind(&DrRobotPlayerNode::cmdVelReceived, this, _1));
         
         /*ROS_INFO("Left wheel PID values set to: [%d,%d,%d]", KP, KI, KD);
         drrobotMotionDriver_->setMotorVelocityCtrlPID(0, KP, KD, KI);

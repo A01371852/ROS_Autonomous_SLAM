@@ -1,7 +1,9 @@
 <launch>
 
+  <arg name="angle"             default="0.28"/>
+
   <!-- Static TF between base_link and camera_link-->
-  <node pkg="tf" type="static_transform_publisher" name="base_to_camera_tf" args="0.16 0 0.25 0 0.28 0 base_link camera_link 1"/>
+  <node pkg="tf" type="static_transform_publisher" name="base_to_camera_tf" args="0.16 0 0.25 0 $(arg angle) 0 base_link camera_link 1"/>
 
   <include file="$(find realsense2_camera)/launch/rs_rgbd.launch"/>
 

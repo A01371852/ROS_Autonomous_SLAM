@@ -52,7 +52,7 @@ $ drrobot_keyboard_teleop
 @section topic ROS topics
 
 Publishes to (name / type):
--@b drrobot_cmd_vel: will publish drrobot_cmd_vel Message to drrobot_player. For robot from Dr Robot Inc, we only need provide linear.x
+-@b cmd_vel: will publish cmd_vel Message to drrobot_player. For robot from Dr Robot Inc, we only need provide linear.x
     as going forward/backward speed, and angular.z as turning speed. drrobot_player will transform these command value to encoder control
     command value and send them to motion control system on the robot
 <hr>
@@ -91,7 +91,7 @@ class DrRobotKeyboardTeleopNode
     public:
         DrRobotKeyboardTeleopNode()
         {
-            pub_ = n_.advertise<geometry_msgs::Twist>("drrobot_cmd_vel", 1);
+            pub_ = n_.advertise<geometry_msgs::Twist>("cmd_vel", 1);
             ros::NodeHandle n_private("~");
         }
 
