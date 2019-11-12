@@ -27,14 +27,8 @@
         <!-- RTAB-Map args-->
         <arg name="queue_size"          value="$(arg queue_size)"/>
         <arg name="rtabmap_args"        value="--delete_db_on_start"/>
-        <arg name="rviz_cfg"            value="~/catkin_ws/x80_slam.rviz"/>
+        <arg name="rviz_cfg"            value="~/catkin_ws/Rviz_config.rviz"/>
     </include>
-
-    <!-- RGBD to LaserScan -->
-    <node respawn="true" pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="laserscan">
-        <remap from="image"        to="/voxel_cloud"/>
-        <remap from="camera_info"  to="/camera/color/camera_info"/>
-    </node>
     
     <!-- Navigation Stack -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
