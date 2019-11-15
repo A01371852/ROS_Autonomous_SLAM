@@ -1,13 +1,19 @@
 TrajectoryPlannerROS:
-  max_vel_x: 0.04
-  min_vel_x: 0.03
-  max_vel_theta: 0.15
-  min_vel_theta: 0.15
-  min_in_place_vel_theta: 0.08
-  escape_vel: -0.02
+  max_vel_x: 0.06
+  min_vel_x: 0.05
+  max_vel_theta: 0.10
+  min_vel_theta: -0.10
+  min_in_place_vel_theta: 0.1
+  escape_vel: -0.05
 
-  acc_lim_th: 0.1
-  acc_lim_x: 0.1
-  acc_lim_y: 0.1
+  acc_lim_th: 0.5
+  acc_lim_x: 0.5
+  acc_lim_y: 0.5
 
+  global_frame_id: odom
   holonomic_robot: false
+  
+  # Increase goal achieving tolerance
+  yaw_goal_tolerance: 1.0 # rads
+  xy_goal_tolerance: 0.15 # meters
+  latch_xy_goal_tolerance: false
