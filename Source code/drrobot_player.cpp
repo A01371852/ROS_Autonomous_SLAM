@@ -108,6 +108,9 @@ Publishes to (name / type):
 #define SERVO0 3100
 #define SERVO1 3500
 
+double g_vel_1 = 0.0;
+double t_vel_1 = 0.0;
+
 using namespace std;
 using namespace DrRobot_MotionSensorDriver;
 
@@ -130,7 +133,7 @@ public:
     std::string robot_prefix_;
 
     DrRobotPlayerNode()
-    {
+    {        
         ros::NodeHandle private_nh("~");
 
         robotID_ = "drrobot1";
@@ -241,7 +244,6 @@ public:
 
     int start()
     {
-
       int res = -1;
  
         drrobotMotionDriver_->openNetwork(robotConfig1_.robotIP,robotConfig1_.portNum);
@@ -271,15 +273,22 @@ public:
     {
       double g_vel = - cmd_vel->linear.x; // ?
       double t_vel = cmd_vel->angular.z;
-      if (robotConfig1_.boardType != Jaguar)
-      {
-        double leftWheel = (2 * g_vel + t_vel* wheelDis_) / (2 * wheelRadius_);
-        double rightWheel = (2 * g_vel - t_vel* wheelDis_) / (2 * wheelRadius_);
 
-        int leftWheelCmd = motorDir_ * leftWheel * encoderOneCircleCnt_ / ( 2* 3.1415927);
-        int rightWheelCmd = - motorDir_ * rightWheel * encoderOneCircleCnt_ / ( 2* 3.1415927);
-        ROS_INFO("Received control command: [%d, %d]", leftWheelCmd,rightWheelCmd);
-        drrobotMotionDriver_->sendMotorCtrlAllCmd(Velocity,leftWheelCmd, rightWheelCmd,NOCONTROL,NOCONTROL, NOCONTROL,NOCONTROL);
+      if (g_vel != g_vel_1 || t_vel != t_vel_1)
+      {
+        g_vel_1 = g_vel;
+        t_vel_1 = t_vel;
+        
+        if (robotConfig1_.boardType != Jaguar)
+        {
+          double leftWheel = (2 * g_vel + t_vel* wheelDis_) / (2 * wheelRadius_);
+          double rightWheel = (2 * g_vel - t_vel* wheelDis_) / (2 * wheelRadius_);
+
+          int leftWheelCmd = motorDir_ * leftWheel * encoderOneCircleCnt_ / ( 2* 3.1415927);
+          int rightWheelCmd = - motorDir_ * rightWheel * encoderOneCircleCnt_ / ( 2* 3.1415927);
+          drrobotMotionDriver_->sendMotorCtrlAllCmd(Velocity,leftWheelCmd, rightWheelCmd,NOCONTROL,NOCONTROL, NOCONTROL,NOCONTROL);
+          ROS_INFO("Received control command: [%d, %d]", leftWheelCmd,rightWheelCmd);
+        }
       }
  
     }
