@@ -16,14 +16,19 @@
     
 <!-- Navigation Stack -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-	    <rosparam file="$(find X80_navigation)/sg_costmap_common_params_x80.yaml" command="load" ns="global_costmap" />
+	    <!-- Configuration files -->
+        <rosparam file="$(find X80_navigation)/sg_costmap_common_params_x80.yaml" command="load" ns="global_costmap" />
 	    <rosparam file="$(find X80_navigation)/sg_costmap_common_params_x80.yaml" command="load" ns="local_costmap" />
 	    <rosparam file="$(find X80_navigation)/sg_local_costmap_params.yaml" command="load" />
 	    <rosparam file="$(find X80_navigation)/sg_global_costmap_params.yaml" command="load" />
 	    <rosparam file="$(find X80_navigation)/base_local_planner_params.yaml" command="load" />
-        <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
-	    <param name="controller_frequency" type="double" value="1.0" />
         <remap from="/cmd_vel" to="/drrobot_X80/cmd_vel"/>
+        <!-- Navigation parameters -->
+        <param name="base_global_planner"  type="string" value="navfn/NavfnROS"/>
+        <param name="base_local_planner"   type="string" value="base_local_planner/TrajectoryPlannerROS"/>
+	    <param name="controller_frequency" type="double" value="5.0"/>  <!--hz-->
+        <param name="controller_patience"  type="double" value="10.0"/>  <!--secs-->
+        <param name="planner_frequency"    type="double" value="1.0"/>
     </node>
     
 <!-- G-Mapping -->
