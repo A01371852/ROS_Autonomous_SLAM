@@ -69,8 +69,21 @@
 
 <!-- RTAB-Map -->
     <param if="$(arg rgbd_sync)"    name="/rtabmap/rtabmap/subscribe_depth"    type="bool" value="false"/>
+    <!-- Filter pointcloud noise -->
     <param name="/rtabmap/rtabmap/Grid/NoiseFilteringRadius" type="double" value="0.05"/>
     <param name="/rtabmap/rtabmap/Grid/NoiseFilteringMinNeighbors" type="int" value="5"/>
+    <!-- Enhance mapping -->
+    <param name="/rtabmap/rtabmap/RGBD/AngularUpdate"        type="string" value="0.01"/>
+    <param name="/rtabmap/rtabmap/RGBD/LinearUpdate"         type="string" value="0.01"/>
+    <param name="/rtabmap/rtabmap/RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
+    <param name="/rtabmap/rtabmap/RGBD/NeighborLinkRefining" type="string" value="true"/>
+    <param name="/rtabmap/rtabmap/RGBD/ProximityBySpace"     type="string" value="true"/>
+    <!-- Force mapping in plain surface -->
+    <param name="/rtabmap/rtabmap/Reg/Force3DoF"        type="string" value="true"/>
+    <!-- Visual odometry parameter tunning -->
+    <param if="$(arg visual_odom)" name="/rtabmap/rtabmap/Odom/Strategy"                    type="int" value="1"/>
+    <param if="$(arg visual_odom)" name="/rtabmap/rtabmap/Odom/ResetCountdown"              type="double" value="1.0"/>
+    <param if="$(arg visual_odom)" name="/rtabmap/rtabmap/Rtabmap/StartNewMapOnLoopClosure" type="bool" value="true"/>
 
     <include file="$(find rtabmap_ros)/launch/rtabmap.launch">
         <!-- Use RViz for visualization -->
@@ -97,7 +110,7 @@
         <arg name="frame_id"            value="base_link"/>
         <arg name="map_frame_id"        value="map"/>
         <arg name="odom_frame_id"       value="odom"/>
-        <arg name="odom_sensor_sync"    value="true"/>
+        <arg name="odom_sensor_sync"    value="true"/>  <!-- Synchronize odom and sensor topics -->
     </include>
 
 <!-- Fixed TF for visual odometry -->
