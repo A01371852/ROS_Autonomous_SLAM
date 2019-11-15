@@ -4,7 +4,6 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /PointCloud21/Status1
         - /Odometry1/Shape1
       Splitter Ratio: 0.424675316
     Tree Height: 237
@@ -108,7 +107,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: RGB8
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -125,7 +124,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -265,6 +264,21 @@ Visualization Manager:
       Unreliable: false
       Value: true
     - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.100000001
+      Class: rviz/Pose
+      Color: 0; 255; 0
+      Enabled: true
+      Head Length: 0.0299999993
+      Head Radius: 0.0500000007
+      Name: Pose
+      Shaft Length: 0.0299999993
+      Shaft Radius: 0.0199999996
+      Shape: Arrow
+      Topic: /move_base/current_goal
+      Unreliable: false
+      Value: true
+    - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 85; 0
       Enabled: true
@@ -309,7 +323,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.30500174
+      Distance: 4.80559874
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
@@ -327,7 +341,7 @@ Visualization Manager:
       Pitch: 1.56979632
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.13870263
+      Yaw: 3.14370227
     Saved: ~
 Window Geometry:
   Displays:
