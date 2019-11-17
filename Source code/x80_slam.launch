@@ -2,7 +2,7 @@
 
     <arg name="visual_odom"  default="false"/>
     <arg name="rgbd_sync"    default="true"/>
-    <arg name="approx_sync"  default="false"/>
+    <arg name="approx_sync"  default="true"/>
 
 <!-- DrRobotX80 -->
     <group ns="drrobot_X80">
@@ -26,7 +26,7 @@
         <!-- Navigation parameters -->
         <param name="base_global_planner"  type="string" value="navfn/NavfnROS"/>
         <param name="base_local_planner"   type="string" value="base_local_planner/TrajectoryPlannerROS"/>
-	    <param name="controller_frequency" type="double" value="5.0"/>  <!--hz-->
+	    <param name="controller_frequency" type="double" value="1.0"/>  <!--hz-->
         <param name="controller_patience"  type="double" value="10.0"/>  <!--secs-->
         <param name="planner_frequency"    type="double" value="1.0"/>
     </node>
@@ -69,6 +69,8 @@
 
 <!-- RTAB-Map -->
     <param if="$(arg rgbd_sync)"    name="/rtabmap/rtabmap/subscribe_depth"    type="bool" value="false"/>
+    <param name="/rtabmap/rtabmap/RGBD/tf_tolerance"     type="double" value="0.5"/>
+    <param name="/rtabmap/rtabmap/RGBD/tf_delay"         type="double" value="0.01"/>
     <!-- Filter pointcloud noise -->
     <param name="/rtabmap/rtabmap/Grid/NoiseFilteringRadius" type="double" value="0.05"/>
     <param name="/rtabmap/rtabmap/Grid/NoiseFilteringMinNeighbors" type="int" value="5"/>
@@ -111,9 +113,8 @@
         <arg name="map_frame_id"        value="map"/>
         <arg name="odom_frame_id"       value="odom"/>
         <arg name="odom_sensor_sync"    value="true"/>  <!-- Synchronize odom and sensor topics -->
-    </include>
 
-<!-- Fixed TF for visual odometry -->
-    <node if="$(arg visual_odom)" pkg="tf" type="static_transform_publisher" name="static_tf" args="0 0 0 0 0 0 odom base_link 1"/>
+        <arg name="wait_for_transform" value="0.5"/>
+    </include>
 
 </launch>

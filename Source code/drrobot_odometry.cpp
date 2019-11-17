@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 	tf::TransformBroadcaster broadcaster;
 	geometry_msgs::TransformStamped odom_trans;
 	odom_trans.header.frame_id = "odom";
-	odom_trans.child_frame_id = "base_footprint";
+	odom_trans.child_frame_id = "base_link";
 
 	// Wheels angular displacement (ticks)
 	int oL = 0;
@@ -90,9 +90,11 @@ int main(int argc, char** argv) {
 	const int max_Cnt		= 32768;	// Max ticks count (32767 = -1)
 
 	// Loop rate
-	ros::Rate loop_rate(20);	// 20Hz
+	ros::Rate loop_rate(40);	// 20Hz
 
 	while (ros::ok()) {
+
+		ros::Time now = ros::Time::now();
 
 		if (delayCount < 10)	// Wait for messages to stabilize
 		{
@@ -167,7 +169,7 @@ int main(int argc, char** argv) {
 			odom_quat = tf::createQuaternionMsgFromYaw(th);
 
 			// Update transform
-			odom_trans.header.stamp = ros::Time::now(); 
+			odom_trans.header.stamp = now;
 			odom_trans.header.frame_id = "odom";
     		odom_trans.child_frame_id = "base_link";
 			odom_trans.transform.translation.x = x; 
@@ -178,7 +180,7 @@ int main(int argc, char** argv) {
 			broadcaster.sendTransform(odom_trans);
 
 			// Filling the odometry
-			odom.header.stamp = ros::Time::now();
+			odom.header.stamp = now;
 			odom.header.frame_id = "odom";
     		odom.child_frame_id = "base_link";
 
