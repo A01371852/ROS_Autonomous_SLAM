@@ -9,4 +9,4 @@ global_costmap:
   height: 50
   origin_x: -25
   origin_y: -25
-  resolution: 0.01
+  resolution: 0.05

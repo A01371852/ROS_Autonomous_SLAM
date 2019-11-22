@@ -6,12 +6,13 @@ raytrace_range: 6.0
 max_obstacle_height: 1.0
 min_obstacle_height: 0.0
 
-robot_radius: 0.19
-inflation_radius: 0.08
+#robot_radius: 0.19
+robot_radius: 0.1
+inflation_radius: 1.75
+cost_scaling_factor: 2.58
 
 transform_tolerance: 1.0
 map_type: costmap
-cost_scaling_factor: 10.0
 
 observation_sources: pointcloud_sensor
 pointcloud_sensor: {sensor_frame: map, data_type: PointCloud2, topic: /rtabmap/cloud_obstacles, marking: true, clearing: true}
