@@ -8,6 +8,7 @@ project(X80_navigation)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  actionlib
   move_base_msgs
   sensor_msgs
   roscpp
@@ -72,7 +73,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   move_base_msgs   std_msgs  nav_msgs  sensor_msgs 
+#   move_base_msgs   std_msgs  nav_msgs  sensor_msgs actionlib_msgs
 # )
 
 ################################################
@@ -107,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES X80_navigation
-#  CATKIN_DEPENDS move_base_msgs roscpp rospy std_msgs
+#  CATKIN_DEPENDS move_base_msgs roscpp rospy actionlib
 #  DEPENDS system_lib
 )
 
@@ -135,6 +136,7 @@ include_directories(include
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(mapcloud_to_laserscan_node src/mapcloud_to_laserscan.cpp)
+add_executable(send_goals_node src/send_goals.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -148,6 +150,9 @@ add_executable(mapcloud_to_laserscan_node src/mapcloud_to_laserscan.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(mapcloud_to_laserscan_node
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(send_goals_node
   ${catkin_LIBRARIES}
 )
 
