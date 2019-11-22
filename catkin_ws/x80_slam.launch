@@ -68,9 +68,7 @@
     </node>
 
 <!-- RTAB-Map -->
-    <param if="$(arg rgbd_sync)"    name="/rtabmap/rtabmap/subscribe_depth"    type="bool" value="false"/>
-    <param name="/rtabmap/rtabmap/RGBD/tf_tolerance"     type="double" value="0.5"/>
-    <param name="/rtabmap/rtabmap/RGBD/tf_delay"         type="double" value="0.01"/>
+    <param if="$(arg rgbd_sync)"    name="/rtabmap/rtabmap/subscribe_depth"    type="bool" value="false"/>>
     <!-- Filter pointcloud noise -->
     <param name="/rtabmap/rtabmap/Grid/NoiseFilteringRadius" type="double" value="0.05"/>
     <param name="/rtabmap/rtabmap/Grid/NoiseFilteringMinNeighbors" type="int" value="5"/>
@@ -113,7 +111,7 @@
         <arg name="map_frame_id"        value="map"/>
         <arg name="odom_frame_id"       value="odom"/>
         <arg name="odom_sensor_sync"    value="true"/>  <!-- Synchronize odom and sensor topics -->
-
+        <!-- Wait for TF in seconds-->
         <arg name="wait_for_transform" value="0.5"/>
     </include>
 
