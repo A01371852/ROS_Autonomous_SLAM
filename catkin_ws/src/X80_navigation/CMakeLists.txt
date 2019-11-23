@@ -8,6 +8,8 @@ project(X80_navigation)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  nav_msgs
+  geometry_msgs
   actionlib
   move_base_msgs
   sensor_msgs

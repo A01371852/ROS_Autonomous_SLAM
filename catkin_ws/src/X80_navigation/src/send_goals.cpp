@@ -1,21 +1,22 @@
 #include <math.h>
-#include <string.h>
 #include <ros/ros.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <nav_msgs/Odometry.h>
+#include <nav_msgs/OccupancyGrid.h>
+#include <geometry_msgs/Point.h>
+#include <geometry_msgs/Quaternion.h>
 
-class Listener  // Odometry subscriber
+class OdomListener  // Odometry subscriber
 {
 	public:
 		double stamp;
-      double x;
-      double y;
-      double w;
+    double x;
+    double y;
+    double w;
 	void callback(const nav_msgs::Odometry::ConstPtr& odom);
 };
-
-void Listener::callback(const nav_msgs::Odometry::ConstPtr& odom)
+void OdomListener::callback(const nav_msgs::Odometry::ConstPtr& odom)
 {
 	stamp = odom->header.stamp.toSec();
   x = odom->pose.pose.position.x;
@@ -23,16 +24,51 @@ void Listener::callback(const nav_msgs::Odometry::ConstPtr& odom)
   w = odom->pose.pose.orientation.w;
 }
 
+class GridListener  // Gridmap subscriber
+{
+	public:
+    double stamp;
+    double resolution;
+    int width;
+    int height;
+    int** grid;
+    geometry_msgs::Point pos;
+    geometry_msgs::Quaternion dir;
+    //std::vector<signed char, std::allocator<signed char> > data;
+	void callback(const nav_msgs::OccupancyGrid::ConstPtr& gridmap);
+};
+void GridListener::callback(const nav_msgs::OccupancyGrid::ConstPtr& gridmap)
+{  
+  stamp = gridmap->header.stamp.toSec();
+  resolution = gridmap->info.resolution;
+  width = gridmap->info.width;
+  height = gridmap->info.height;
+  grid[width][height];
+  for(int i = 0; i < height; i++)
+    for(int j = 0; j < height; j++)
+      grid[i][j] = (int)gridmap->data[i+j];
+  pos = gridmap->info.origin.position;
+  dir = gridmap->info.origin.orientation;
+  //data = gridmap->data;
+}
+
+// move_base publisher
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
 int main(int argc, char** argv){
   
   ros::init(argc, argv, "simple_navigation_goals");
-  ros::NodeHandle n;
+  ros::NodeHandle n_odom;
+  ros::NodeHandle n_gridmap;
 
   // 'drrobot_X80/odom' topic suscriber
-  Listener odom;
-  ros::Subscriber odom_sub = n.subscribe<nav_msgs::Odometry>("drrobot_X80/odom", 1, &Listener::callback,&odom);
+  OdomListener odom;
+  ros::Subscriber odom_sub = n_odom.subscribe<nav_msgs::Odometry>("drrobot_X80/odom", 1, &OdomListener::callback,&odom);
+
+  // 'rtabmap/grid_map' topic suscriber
+  GridListener gridmap;
+  ros::Subscriber gridmap_sub = n_gridmap.subscribe<nav_msgs::OccupancyGrid>("rtabmap/grid_map", 1, &GridListener::callback,&gridmap);
+  /*nav_msgs/OccupancyGrid*/
 
   //tell the action client that we want to spin a thread by default
   MoveBaseClient ac("move_base", true);
@@ -69,8 +105,23 @@ int main(int argc, char** argv){
 
   while (ros::ok()) {
 
+    ROS_INFO("---------------------------------------------------------------");
+    ROS_INFO("Origin: [%f,%f,%f]", gridmap.pos.x, gridmap.pos.y, gridmap.dir.w);
+    ROS_INFO("Height: %d\tWidth: %d\tSize: %d", gridmap.height, gridmap.width, /*(int)gridmap.data.size()*/ gridmap.height*gridmap.width);
+
+    /*for(int i = 0; i < gridmap.data.size(); i++)
+    {
+        ROS_INFO("\t%d",(int) gridmap.data[i]);
+    }*/
+
+    for(int i = 0; i < gridmap.width; i++)
+      for(int j = 0; j < gridmap.height; j++)
+        ROS_INFO("[%d][%d]:\t%d", i, j, gridmap.grid[i][j]);
+
     //ROS_INFO("time: %f,\tdist: %f,\trot: %f", odom.stamp-last_time, pow( pow(odom.x - x, 2) + pow(odom.y - y, 2), 0.5), fabs(odom.w - w));
-    ROS_INFO("result: %d", system(ac.getState().getText().c_str()));
+    //ROS_INFO("result: %d", system(ac.getState().getText().c_str()));
+
+    ROS_INFO("int: %d", system(ac.getState().getText().c_str()));
     
     if( pow( pow(odom.x - x, 2) + pow(odom.y - y, 2), 0.5) < 0.1  // Distance from goal
       && fabs(odom.w - w) < 0.1 )                                 // Difference in orientation
