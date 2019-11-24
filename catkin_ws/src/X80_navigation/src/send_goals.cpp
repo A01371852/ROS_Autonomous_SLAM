@@ -1,5 +1,5 @@
-#include <string>
 #include <math.h>
+#include <vector>
 #include <ros/ros.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
@@ -91,6 +91,8 @@ int main(int argc, char** argv){
   int value;        // Gridmap vars
   double x;
   double y;
+  int max_neighbors;
+  int count_neighbors;
 
   bool goal_sent = false;
 
@@ -98,36 +100,61 @@ int main(int argc, char** argv){
   ros::Rate loop_rate(1);	// 1Hz
 
   while (ros::ok()) {
-
-    ROS_INFO("---------------------------------------------------------------");
-    ROS_INFO("Time: %f\tResolution: %f\tOrigin: [%f,%f,%f]", gridmap.stamp, gridmap.resolution, gridmap.pos.x, gridmap.pos.y, gridmap.dir.w);
-    ROS_INFO("Height: %d\tWidth: %d\tSize: %d", gridmap.height, gridmap.width, (int)gridmap.data.size());
     
-    if (!goal_sent){
-      for(int j = 0; j < gridmap.height; j++){
-        y = j * gridmap.resolution + gridmap.pos.y;   // y coordinate in meters
-        for(int i = 0; i < gridmap.width; i++){
-          x = i * gridmap.resolution + gridmap.pos.x; // x coordinate in meters
-          value = gridmap.data[j*gridmap.width + i];
-          if (value == 100){
-            goal_x = x;
-            goal_y = y;
-            goal_w = 1.0;
-            goal.target_pose.pose.position.x = goal_x; // Send goal
-            goal.target_pose.pose.position.y = goal_y;
-            goal.target_pose.pose.orientation.w = goal_w;
+    // Create a vector containing neighbors
+    std::vector<int> neighbors;
+    std::vector<int> neighbors_1;
 
-            last_time = ros::Time::now().toSec();
-
-            ROS_INFO("Sending goal");
-            ac.sendGoal(goal);
-            goal_sent = true;
-            break;
-          }
-          //printf("%d ", index);
-        }
-        //printf("\n");
+    if (!goal_sent && (int)gridmap.data.size() > 0){
+      
+      max_neighbors = 0;
+      for(int i = 0; i < (int)gridmap.data.size(); i++){
+        neighbors_1.push_back(0);
       }
+
+      for (int n = 0; n < 3; n++){  // Iterate gridmap three times
+        for(int j = 1; j < gridmap.height-1; j++){
+          for(int i = 1; i < gridmap.width-1; i++){
+            value = gridmap.data[j*gridmap.width + i];
+            if(value == -1){  // If cell is unknown
+              count_neighbors = 0;  // Count neighbors
+              if(gridmap.data[(j-1)*gridmap.width + i] == -1)
+                count_neighbors += 1 + neighbors_1[(j-1)*gridmap.width + i];
+              if(gridmap.data[(j+1)*gridmap.width + i] == -1)
+                count_neighbors += 1 + neighbors_1[(j+1)*gridmap.width + i];
+              if(gridmap.data[j*gridmap.width + (i-1)] == -1)
+                count_neighbors += 1 + neighbors_1[j*gridmap.width + (i-1)];
+              if(gridmap.data[j*gridmap.width + (i+1)] == -1)
+                count_neighbors += 1 + neighbors_1[j*gridmap.width + (i+1)];
+              neighbors.push_back(count_neighbors);
+              if (count_neighbors > max_neighbors){ // If neighbors are max
+                max_neighbors = count_neighbors;
+                ROS_INFO("%d", max_neighbors);
+                x = i * gridmap.resolution + gridmap.pos.x; // x coordinate in meters
+                y = j * gridmap.resolution + gridmap.pos.y; // y coordinate in meters
+              }
+            }
+            else
+              neighbors.push_back(0);
+          }
+        }
+        neighbors_1 = neighbors;
+        neighbors.clear();
+      }
+      goal_x = x;
+      goal_y = y;
+      goal_w = 1.0;
+      goal.target_pose.pose.position.x = goal_x; // Send goal
+      goal.target_pose.pose.position.y = goal_y;
+      goal.target_pose.pose.orientation.w = goal_w;
+
+      last_time = ros::Time::now().toSec();
+      ROS_INFO("---------------------------------------------------------------");
+      ROS_INFO("Time: %f\tResolution: %f\tOrigin: [%f,%f,%f]", gridmap.stamp, gridmap.resolution, gridmap.pos.x, gridmap.pos.y, gridmap.dir.w);
+      ROS_INFO("Height: %d\tWidth: %d\tSize: %d", gridmap.height, gridmap.width, (int)gridmap.data.size());
+      ROS_INFO("Sending goal: [%f,%f] : %d", goal_x, goal_y, max_neighbors);
+      ac.sendGoal(goal);
+      goal_sent = true;
     }
 
     //ROS_INFO("time: %f,\tdist: %f,\trot: %f", odom.stamp-last_time, pow( pow(odom.x - goal_x, 2) + pow(odom.y - goal_y, 2), 0.5), fabs(odom.w - goal_w));
@@ -140,7 +167,6 @@ int main(int argc, char** argv){
         ROS_INFO("\n\tGoal reached");
         goal_sent = false;
         ros::Duration(1.0).sleep();   // Sleep for a second
-        break;
       }
       else if ( odom.stamp - last_time > timeout || ac.getState() == actionlib::SimpleClientGoalState::ABORTED)  // Timeout reached
       {
@@ -148,7 +174,6 @@ int main(int argc, char** argv){
         ROS_INFO("\n\tCould not reach goal");
         goal_sent = false;
         ros::Duration(1.0).sleep();   // Sleep for a second
-        break;
       }
     }
 

@@ -69,9 +69,11 @@
 
 <!-- RTAB-Map -->
     <param if="$(arg rgbd_sync)"    name="/rtabmap/rtabmap/subscribe_depth"    type="bool" value="false"/>>
+    <!-- Gridmap resolution -->
+    <param name="/rtabmap/rtabmap/Grid/CellSize"  type="double" value="0.10"/>
     <!-- Filter pointcloud noise -->
-    <param name="/rtabmap/rtabmap/Grid/NoiseFilteringRadius" type="double" value="0.05"/>
-    <param name="/rtabmap/rtabmap/Grid/NoiseFilteringMinNeighbors" type="int" value="5"/>
+    <param name="/rtabmap/rtabmap/Grid/NoiseFilteringRadius" type="double" value="0.10"/>
+    <param name="/rtabmap/rtabmap/Grid/NoiseFilteringMinNeighbors" type="int" value="3"/>
     <!-- Enhance mapping -->
     <param name="/rtabmap/rtabmap/RGBD/AngularUpdate"        type="string" value="0.01"/>
     <param name="/rtabmap/rtabmap/RGBD/LinearUpdate"         type="string" value="0.01"/>
