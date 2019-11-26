@@ -1,11 +1,11 @@
 TrajectoryPlannerROS:
   max_vel_x: 0.05
   min_vel_x: 0.05
-  max_vel_theta: 0.35
-  min_vel_theta: -0.35
+  max_vel_theta: 0.20
+  min_vel_theta: -0.20
   min_in_place_vel_theta: 0.10 #0.08
   max_in_place_vel_theta: 0.10 #0.08
-  max_rotational_vel: 0.08
+  max_rotational_vel: 0.10
   escape_vel: -0.03
 
   acc_lim_th: 0.5
@@ -18,5 +18,5 @@ TrajectoryPlannerROS:
   # Define goal achieving tolerance
   yaw_goal_tolerance: 0.1 # rads
   xy_goal_tolerance: 0.1 # meters
-  latch_xy_goal_tolerance: false
+  latch_xy_goal_tolerance: true
   meter_scoring: true
