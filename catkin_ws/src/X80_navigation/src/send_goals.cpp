@@ -124,73 +124,66 @@ int main(int argc, char** argv){
 			if ( (int)gridmap.data.size() > 0 ){	// If map is not empty
 				
 				// Fill previous values vector with zeros
-				for(int i = 0; i < (int)gridmap.data.size(); i++){
+				for(int i = 0; i < (int)gridmap.data.size(); i++)
 					neighbors_1.push_back(0);
-					if (gridmap.data[i] == -1)
-						unknown++;
-				}
-				if ( (double)unknown / (double)gridmap.data.size() > 0.20)
-				{
-					// Iterate gridmap twice
-					for (int n = 0; n < 2; n++){
-						max_neighbors = 0;	// Initialize selection metrics
-						min_distance = 50;
-						for (int j = 0; j < gridmap.height; j++){
-							for (int i = 0; i < gridmap.width; i++){
-								value = gridmap.data[j*gridmap.width + i];	// Read cell
-								// If cell is known || belongs to first and last rows or columns
-								if ( value != -1 || i == 0 || i == gridmap.width-1 || j == 0 || j == gridmap.height-1)
-									neighbors.push_back(0);
-								else
-								{
-									count_neighbors = 0;  // Count neighbors
-									if(gridmap.data[(j-1)*gridmap.width + i] == -1)
-										count_neighbors += 1 + neighbors_1[(j-1)*gridmap.width + i];
-									if(gridmap.data[(j+1)*gridmap.width + i] == -1)
-										count_neighbors += 1 + neighbors_1[(j+1)*gridmap.width + i];
-									if(gridmap.data[j*gridmap.width + (i-1)] == -1)
-										count_neighbors += 1 + neighbors_1[j*gridmap.width + (i-1)];
-									if(gridmap.data[j*gridmap.width + (i+1)] == -1)
-										count_neighbors += 1 + neighbors_1[j*gridmap.width + (i+1)];
-									neighbors.push_back(count_neighbors);
-									if (count_neighbors >= max_neighbors){ // If neighbors are max
-										max_neighbors = count_neighbors;
-										x_temp = i * gridmap.resolution + gridmap.pos.x; // x coordinate in meters
-										y_temp = j * gridmap.resolution + gridmap.pos.y; // y coordinate in meters
-										dist_temp = pow( pow(odom.x - x_temp, 2) + pow(odom.y - y_temp, 2), 0.5);
-										if (dist_temp < min_distance && dist_temp > 0.25){  // If it is the closest unknown area
-											min_distance = dist_temp;
-											x = x_temp;	// Set new goal
-											y = y_temp;
-										}
+				
+				// Iterate gridmap twice
+				for (int n = 0; n < 2; n++){
+					max_neighbors = 0;	// Initialize selection metrics
+					min_distance = 50;
+					for (int j = 0; j < gridmap.height; j++){
+						for (int i = 0; i < gridmap.width; i++){
+							value = gridmap.data[j*gridmap.width + i];	// Read cell
+							// If cell is known || belongs to first and last rows or columns
+							if ( value != -1 || i == 0 || i == gridmap.width-1 || j == 0 || j == gridmap.height-1)
+								neighbors.push_back(0);
+							else
+							{
+								count_neighbors = 0;  // Count neighbors
+								if(gridmap.data[(j-1)*gridmap.width + i] == -1)
+									count_neighbors += 1 + neighbors_1[(j-1)*gridmap.width + i];
+								if(gridmap.data[(j+1)*gridmap.width + i] == -1)
+									count_neighbors += 1 + neighbors_1[(j+1)*gridmap.width + i];
+								if(gridmap.data[j*gridmap.width + (i-1)] == -1)
+									count_neighbors += 1 + neighbors_1[j*gridmap.width + (i-1)];
+								if(gridmap.data[j*gridmap.width + (i+1)] == -1)
+									count_neighbors += 1 + neighbors_1[j*gridmap.width + (i+1)];
+								neighbors.push_back(count_neighbors);
+								if (count_neighbors >= max_neighbors){ // If neighbors are max
+									max_neighbors = count_neighbors;
+									x_temp = i * gridmap.resolution + gridmap.pos.x; // x coordinate in meters
+									y_temp = j * gridmap.resolution + gridmap.pos.y; // y coordinate in meters
+									dist_temp = pow( pow(odom.x - x_temp, 2) + pow(odom.y - y_temp, 2), 0.5);
+									if (dist_temp < min_distance && dist_temp > 0.20){  // If it is the closest unknown area
+										min_distance = dist_temp;
+										x = x_temp;	// Set new goal
+										y = y_temp;
 									}
 								}
 							}
 						}
-						neighbors_1 = neighbors;	// Ready for new iteration
-						neighbors.clear();
 					}
-					goal_x = x;	// Set goal
-					goal_y = y;
-					goal_w = atan2(y, x);
-					goal.target_pose.header.stamp = ros::Time::now();
-					goal.target_pose.pose.position.x = goal_x; // Send goal
-					goal.target_pose.pose.position.y = goal_y;
-					goal.target_pose.pose.orientation = tf::createQuaternionMsgFromYaw(goal_w);
-					ac.sendGoal(goal);
-
-					last_time = ros::Time::now().toSec();	// Start timeout counter
-
-					ROS_INFO("\nSTATE 0: ---------------------------------------------");
-					ROS_INFO("Time: %.2f  Origin: [%.2f,%.2f,%.2f]", gridmap.stamp, gridmap.pos.x, gridmap.pos.y, gridmap.dir.w);
-					ROS_INFO("Height: %d  Width: %d  Size: %d", gridmap.height, gridmap.width, (int)gridmap.data.size());
-					ROS_INFO("Sending goal: [%.2f,%.2f]", goal_x, goal_y);
-					ROS_INFO("Value: %d Distance: %.2f", max_neighbors, min_distance);
-
-					state = 1;	// Goal is sent
+					neighbors_1 = neighbors;	// Ready for new iteration
+					neighbors.clear();
 				}
-				else
-					state = 5;	// The map is complete
+				goal_x = x;	// Set goal
+				goal_y = y;
+				goal_w = atan2(y, x);
+				goal.target_pose.header.stamp = ros::Time::now();
+				goal.target_pose.pose.position.x = goal_x; // Send goal
+				goal.target_pose.pose.position.y = goal_y;
+				goal.target_pose.pose.orientation = tf::createQuaternionMsgFromYaw(goal_w);
+				ac.sendGoal(goal);
+
+				last_time = ros::Time::now().toSec();	// Start timeout counter
+
+				ROS_INFO("\nSTATE 0: ---------------------------------------------");
+				ROS_INFO("Time: %.2f  Origin: [%.2f,%.2f,%.2f]", gridmap.stamp, gridmap.pos.x, gridmap.pos.y, gridmap.dir.w);
+				ROS_INFO("Height: %d  Width: %d  Size: %d", gridmap.height, gridmap.width, (int)gridmap.data.size());
+				ROS_INFO("Sending goal: [%.2f,%.2f]", goal_x, goal_y);
+				ROS_INFO("Value: %d Distance: %.2f", max_neighbors, min_distance);
+
+				state = 1;	// Goal is sent
 			}
 			else
 				state = 0;
@@ -208,7 +201,7 @@ int main(int argc, char** argv){
 				ROS_INFO("\nSTATE 1: ---------------------------------------------");
 				ROS_INFO("Goal reached");
 				w = tf::getYaw(odom.orientation);	// Current orientation
-				last_time = ros::Time::now().toSec();
+				last_time = ros::Time::now().toSec();	// Start countdown
 				state = 2;	// Goal succeded
 			}
 			else if ( odom.stamp - last_time > timeout || ac.getState() == actionlib::SimpleClientGoalState::ABORTED)  // Goal aborted
@@ -216,9 +209,18 @@ int main(int argc, char** argv){
 				ac.cancelGoal();	// Clear goals
 				ROS_INFO("\nSTATE 1: ---------------------------------------------");
 				ROS_INFO("Goal is unreachable");
-				w = tf::getYaw(odom.orientation);	// Current orientation
-				last_time = ros::Time::now().toSec();
-				state = 2;	// Goal was aborted
+
+				if( pow( pow(odom.x, 2) + pow(odom.y, 2), 0.5) < 0.15	// Since the robot did not move from the origin
+				&& fabs(tf::getYaw(odom.orientation)) < 0.2	)			// there are no more areas of interest
+				{
+					state = 5;	// Finish execution
+				}
+				else	// There might be more areas of interest left to explore
+				{
+					w = tf::getYaw(odom.orientation);	// Current orientation
+					last_time = ros::Time::now().toSec();	// Start countdown
+					state = 2;	// Goal was aborted
+				}
 			}
 			else
 				state = 1;
@@ -285,7 +287,11 @@ int main(int argc, char** argv){
 
 		// ----------------------------------------------------- Map is complete  -------------------------------
 		case 5:
+			
+			for(int i = 0; i < (int)gridmap.data.size(); i++)	// Count unknown grids
+				if (gridmap.data[i] == -1) unknown++;
 			ROS_INFO("\nSTATE 5: ---------------------------------------------");
+			ROS_INFO("%.2f percent of the map is known", (double)unknown/(double)gridmap.data.size());
 			ROS_INFO("THE MAP IS COMPLETE!");
 			state = 5;
 			return 0;
