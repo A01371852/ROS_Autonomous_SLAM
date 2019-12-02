@@ -14,6 +14,9 @@ Navigation demo from 11/16/19: https://youtu.be/bn-o5vQM7YU
 
 The following steps are aimed to help the user replicate the setting up of the project at its current state, as well as giving an overall understanding of the implemented system.
 
+| NOTE: This tutorial serves as a guide to setup the project to run in ROS [Kinetic Kame](http://wiki.ros.org/kinetic) and Ubuntu 16.04. However, it is recommended that any new contributor makes the effort of migrating the current state of the project to the newest ROS distribution [Melodic Morenia](http://wiki.ros.org/melodic) and Ubuntu 18.04, as it will guarantee a longer support and the potential implementation of newer packages that might help push the project forward in the future. |
+| --- |
+
 ### Prerequisites
 
 #### Hardware prerequisites
@@ -33,7 +36,7 @@ The following steps are aimed to help the user replicate the setting up of the p
 
 The process for installing Ubuntu 16.04 in both devices is the following:
 
-* Download the ISO file from [this link](http://releases.ubuntu.com/16.04/) by selecting the ```64-bit PC (AMD64) desktop image```.
+* Download the ISO file from [this link](http://releases.ubuntu.com/16.04/) by selecting the `64-bit PC (AMD64) desktop image`.
 * Create a bootable USB image of the ISO file. That process is explained in these links for [Windows](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-windows#0) and [MacOS](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-macos#0).
 * Installing Ubuntu 16.04 in both computers as explained in [this tutorial](https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-desktop-1604#0).
 
@@ -43,7 +46,7 @@ Although a virtual machine with Ubuntu can be used in the external PC, is is rec
 
 #### Hardware setup
 
-Setting up the hardware is pretty straightforward. However, it is recommended to check for any short circuit between the terminals of the regulators before connecting the battery, and to measure the output voltage of the step-down regulator before connecting the UP Board.
+Setting up the hardware is pretty straightforward. However, it is recommended to **check for any short circuit** between the terminals of the regulators before connecting the battery, and to **measure the output voltage** of the step-down regulator before connecting the UP Board.
 
 After the security checks, the charged and balanced LiPo battery is connected to the DrRobot X80 using a male Tamiya connector, and to the 5V power regulator. The X80 can be connected directly to the battery as it already incorporates a low dropout regulator [[6](#bibliography)]. The UP Board will be fed 5V by the step-down regulator through a male DC jack connector. Finally, the camera is connected to the UP Board through the USB 3.0 port; an addapter for the cable might be needed as illustrated in this diagram.
 
@@ -53,43 +56,119 @@ After the security checks, the charged and balanced LiPo battery is connected to
 
 #### Software setup
 
-Once Ubuntu 16.04
+**These steps are executed in both computers. A reliable internet connection is needed.** The commands are run in a bash terminal (Ctrl + Alt + T).
 
+##### Installing ROS
+
+Once Ubuntu 16.04 has been installed in both the UP Board and the external PC, the next step is to install the ROS distribution Kinetic Kame. This section is based on the more in-depth tutorial from the ROS Wiki: [Ubuntu install of ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu). For a more detailed explanation please read the provided link.
+
+Setup your computer to accept software from packages.ros.org by modifying the file `sources.list`:
 ```
-$ Comandos a ejecutar
-```
-En ocasiones es necesario explicar algún comando dentro de un párrafo, como por ejemplo `mkdir` . Para lograr esto se pone entre apóstrofes invertidos la palabra deseada:
-
-
-### Demo example
-
-
-
-```
-$ Comando ejemplificativo o un pedazo de código a editar o modificar antes de compilar.
+$ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 ```
 
+Setup the keys:
+```
+$ sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+```
+
+Make sure your package index is up-to-date:
+```
+$ sudo apt-get update
+```
+
+Perform a ROS Kinetic Kame full installation:
+```
+$ sudo apt-get install ros-kinetic-desktop-full
+```
+
+Initialize rosdep:
+```
+$ sudo rosdep init
+$ rosdep update
+```
+
+Setup your ROS environment variables to be automatically added to your bash session every time a new shell is launched:
+```
+$ echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
+$ source ~/.bashrc
+```
+
+Install other dependencies for building ROS packages:
+```
+$ sudo apt install python-rosinstall python-rosinstall-generator python-wstool build-essential
+```
+
+Up to this point, the core tools for ROS have been setup in the computer.
 
 
-## Recomendaciones para escribir en el README.md
-
-Una lista de opciones se puede crear comenzando la linea con un asterisco y espacio, * + <space>, en cada una de ellas:
-* Opción uno
-  - Opción 3.1
-
-[Maven](https://maven.apache.org/) - Dependency Management
+##### Setting up the Catkin Workspace
 
 
-<p align="center">
-  <img width="460" height="300" src="http://www.ros.org/wp-content/uploads/2016/05/kinetic.png">
-</p>
+
+:
+```
+$ 
+```
+
+:
+```
+$ 
+```
+
+:
+```
+$ 
+```
+
+:
+```
+$ 
+```
+
+:
+```
+$ 
+```
+
+:
+```
+$ 
+```
+
+:
+```
+$ 
+```
+
+:
+```
+$ 
+```
+
+:
+```
+$ 
+```
+
+#### Network setup
+
+This system is designed to run inside a Local Network (LAN) using a TRENDnet N300 Wireless Router. You might be able to use a different router, however it might involve changing the configuration of the X80 wireless module, which is not recommended as it might compromise the functioning of the robot.
+
+Also, for this tutorial the router labeled as **"X80/2"** was used. Other routers might have a different username or password, or even a different configuration.
+
+##### Setting up the router
+
+From a computer with WiFi, connect to the newtwork with the following configuration:
+
+* SSID: *dri*
+* Password: **
 
 
-| Cantidad | Descripción | Precio Unitario | Subtotal |
-| --- | --- | --- | --- |
-| 1 | Tarjeta Arduino | 100.00 | 100.00 |
-| 2 | Potenciómetros | 10.00 | 20.00 |
-| 10 | Resistencias de 1K| 1.00 | 10.00 |
+
+
+### Run the DEMO
+
 
 
 ## Authors
