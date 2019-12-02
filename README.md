@@ -162,9 +162,9 @@ Also, for this tutorial the router labeled as **"X80/2"** was used. Other router
 From a computer with WiFi, connect to the newtwork with the following configuration:
 
 * SSID: *dri*
-* Password: **
+* Password: *112233445566778899AABBCCDD*
 
-
+To access the router configuration access this IP from a web browser: http://192.168.0.200/
 
 
 ### Run the DEMO
