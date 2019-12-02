@@ -155,16 +155,71 @@ $
 
 This system is designed to run inside a Local Network (LAN) using a TRENDnet N300 Wireless Router. You might be able to use a different router, however it might involve changing the configuration of the X80 wireless module, which is not recommended as it might compromise the functioning of the robot.
 
-Also, for this tutorial the router labeled as **"X80/2"** was used. Other routers might have a different username or password, or even a different configuration.
+For this tutorial the **router** labeled as **"X80/2"** was used. Other routers might have a different username or password, or even a different configuration. Also, the **robot** that was used is labeled as **"X80/3"** with the static IP 192.168.0.203. The IP of the robot by default is printed underneath the chassis.
 
-##### Setting up the router
+##### Setting up the DHCP list
 
 From a computer with WiFi, connect to the newtwork with the following configuration:
 
 * SSID: *dri*
 * Password: *112233445566778899AABBCCDD*
 
-To access the router configuration access this IP from a web browser: http://192.168.0.200/
+To change the router configuration access this IP from a web browser: http://192.168.0.200/ and then enter the username and password:
+
+* Username: *admin*
+* Password: *drrobot*
+
+Click on *Main* and look for the DHCP List. To avoid further difficulties it is recommended to set static IPs for the two computers to be used. In the *Dynamic DHCP List* you might see your computer's name, IP and MAC addresses. Copy them on the text-boxes above and click *Add* to make them static. The same information may now be displayed in the *Static DHCP List*. You may now connect the other computer to the same network and add it to the static list as well.
+
+##### Connecting the X80
+
+If everything is working properly the DrRobot X80 will automatically connect to the *dri* network, as it is configured to do so by default. You can verify this by doing a ping test:
+```
+$ ping 192.168.0.203
+```
+If the output is similar to this, then the robot was successfully connected to the LAN:
+```
+PING 192.168.0.203 (192.168.0.203) 56(84) bytes of data.
+64 bytes from 192.168.0.203: icmp_seq=1 ttl=64 time=6.59 ms
+...
+```
+If, however, the output is similar to this, there is a problem with the WiFi module of the robot or the router is not configured properly:
+```
+PING 192.168.0.203 (192.168.0.203) 56(84) bytes of data.
+From 192.168.0.101 icmp_seq=10 Destination Host Unreachable
+...
+```
+The console will continue on printing messages indefinitely, so you can kill the proccess with Ctrl+C anytime.
+
+##### Setting up your ROS environment variables
+
+As explained in the ROS [Network Setup tutorial](http://wiki.ros.org/ROS/NetworkSetup#Single_machine_configuration), the environment variables `ROS_HOSTNAME` and `ROS_IP` have to be configured in all the computers within the LAN.
+
+For this example lets assume that the IP of the UP Board is `192.168.0.103` and the IP of the external PC is `192.168.0.101`. The following commands have to be executed in the UP Board:
+
+```
+$ echo "export ROS_MASTER_URI=http://192.168.0.103:11311/" >> ~/.bashrc
+$ echo "export ROS_IP=192.168.0.103" >> ~/.bashrc
+$ source ~/.bashrc
+```
+And these commands are executed in the external PC:
+
+```
+$ echo "export ROS_MASTER_URI=http://192.168.0.103:11311/" >> ~/.bashrc
+$ echo "export ROS_IP=192.168.0.101" >> ~/.bashrc
+$ source ~/.bashrc
+```
+
+Notice that the `ROS_MASTER_URI` variable is the same for all the computers. This implies that the UP Board will always run the master node. To make sure the variables have been set verify the output of these commands:
+
+```
+$ echo $ROS_IP
+$ echo $ROS_MASTER_URI
+```
+
+##### Solving timing issues
+
+A common issue when working doing remote mapping with RTAB-Map/RViz is the program complaining about extrapolation into the future or past, which in broad terms means that there exists a discrepancy in the system times for the machines across the network. As explained in the [Network Setup tutorial](http://wiki.ros.org/ROS/NetworkSetup#Timing_issues.2C_TF_complaining_about_extrapolation_into_the_future.3F), a solution is using ntpdate to reduce this discrepancy.
 
 
 ### Run the DEMO
