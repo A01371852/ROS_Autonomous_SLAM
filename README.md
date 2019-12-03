@@ -10,6 +10,28 @@ Navigation demo from 11/16/19: https://youtu.be/bn-o5vQM7YU
   <img width="460" height="460" src="Evidences/Robot.jpg">
 </p>
 
+## Table of contents
+
+* [Tutorial](#tutorial)
+  - [Hardware prerequisites](#hardware-prerequisites)
+  - [Software prerequisites](#software-prerequisites)
+  - [Hardware setup](#hardware-setup)
+  - [Software setup](#software-setup)
+    - [Installing ROS](#installing-ros)
+    - [Setting up the UP Board catkin workspace](#setting-up-the-up-board-catkin-workspace)
+    - [Setting up the external PC catkin workspace](#setting-up-the-external-pc-catkin-workspace)
+  - [Network setup](#network-setup)
+    - [Setting up the DHCP list](#setting-up-the-dhcp-list)
+    - [Connecting the X80](#connecting-the-x80)
+    - [Setting up your ROS environment variables](#setting-up-your-ros-environment-variables)
+    - [Synchronizing computers across network](#synchronizing-computers-across-network)
+  - [Run the demo](#run-the-demo)
+    - [Launching the camera node](#launching-the-camera-node)
+    - [Launching the remote mapping and navigation nodes](#launching-the-remote-mapping-and-navigation-nodes)
+    - [Launching the autonomous SLAM node](#launching-the-autonomous-slam-node)
+* [Authors](#authors)
+* [References](#references)
+
 ## Tutorial
 
 The following steps are aimed to help the user replicate the setting up of the project at its current state, as well as giving an overall understanding of the implemented system.
@@ -17,9 +39,7 @@ The following steps are aimed to help the user replicate the setting up of the p
 | NOTE: This tutorial serves as a guide to setup the project to run in ROS [Kinetic Kame](http://wiki.ros.org/kinetic) and Ubuntu 16.04. However, it is recommended that any new contributor makes the effort of migrating the current state of the project to the newest ROS distribution [Melodic Morenia](http://wiki.ros.org/melodic) and Ubuntu 18.04, as it will guarantee a longer support and the potential implementation of newer packages that might help push the project forward in the future. |
 | --- |
 
-### Prerequisites
-
-#### Hardware prerequisites
+### Hardware prerequisites
 
 * DrRobot X80 platform [[1](#bibliography)]
 * Intel Realsense SR300 / BlasterX Senz3D camera [[2](#bibliography)]
@@ -30,7 +50,7 @@ The following steps are aimed to help the user replicate the setting up of the p
 * Pololu D15V70F5S3 5V step-down power regulator [[5](#bibliography)] or a regulator with similar specifications
 * External PC with WiFi
 
-#### Software prerequisites
+### Software prerequisites
 
 * Ubuntu 16.04 Operating System for both the UP Board and the external PC
 
@@ -335,7 +355,7 @@ This will start the autonomous navigation and you should see the robot moving. O
 * **Gerardo Uriel Monroy Vázquez** (A01372286@itesm.mx) - *Digital Systems and Robotics Engineering*
 * **Emmanuel Hernández Olvera** (A01371852@itesm.mx) - *Digital Systems and Robotics Engineering*
 
-## Bibliography
+## References
 
 1. Dr.Robot. (2006). *WiRobot X80 USER MANUAL*. Retrieved from: [https://www.cs.princeton.edu/courses/archive/fall11/cos495/X80_Manual.pdf](Datasheets/X80_Manual.pdf)
 2. Intel Corporation. (2016). *Intel RealSense Camera SR300*. Retrieved from: [https://www.mouser.com/pdfdocs/intel_realsense_camera_sr300.pdf](Datasheets/intel_realsense_camera_sr300.pdf)
