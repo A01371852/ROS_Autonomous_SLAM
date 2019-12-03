@@ -41,13 +41,13 @@ The following steps are aimed to help the user replicate the setting up of the p
 
 ### Hardware prerequisites
 
-* DrRobot X80 platform [[1](#bibliography)]
-* Intel Realsense SR300 / BlasterX Senz3D camera [[2](#bibliography)]
-* AAEON UP Board [[3](#bibliography)] (or a similar board with a USB 3.0 port and 64bit architecture)
+* DrRobot X80 platform [[1](#references)]
+* Intel Realsense SR300 / BlasterX Senz3D camera [[2](#references)]
+* AAEON UP Board [[3](#references)] (or a similar board with a USB 3.0 port and 64bit architecture)
 * WiFi-USB module (only if the board does not have an embedded WiFi module already)
-* TRENDnet N300 Wireless Router [[4](#bibliography)]
+* TRENDnet N300 Wireless Router [[4](#references)]
 * 11.1V 3S LiPo battery with at least 3000mAh (5200mAh recommended)
-* Pololu D15V70F5S3 5V step-down power regulator [[5](#bibliography)] or a regulator with similar specifications
+* Pololu D15V70F5S3 5V step-down power regulator [[5](#references)] or a regulator with similar specifications
 * External PC with WiFi
 
 ### Software prerequisites
