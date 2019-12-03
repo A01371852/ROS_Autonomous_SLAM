@@ -321,14 +321,16 @@ This will start the autonomous navigation and you should see the robot moving. O
 
 **Note:** If the robot does not move it might not be receiving the navigation commands. Make sure you can ping it from your computer, and if it does not work run the demo all over again. If the robot will not move nevertheless, you might have to go through the Network setup again.
 
-
-
+<p align="center">
+  <img src="Evidences/nov_23_2019_goal_setting.png">
+  <img src="Evidences/nov_22_2019_autonomous_slam_cloudmap_2.png">
+</p>
 
 ## Authors
 
-**Marcos Eduardo Castañeda Guzman** (A01372581@itesm.mx) - *Digital Systems and Robotics Engineering*
-**Gerardo Uriel Monroy Vázquez** (A01372286@itesm.mx) - *Digital Systems and Robotics Engineering*
-**Emmanuel Hernández Olvera** (A01371852@itesm.mx) - *Digital Systems and Robotics Engineering*
+* **Marcos Eduardo Castañeda Guzman** (A01372581@itesm.mx) - *Digital Systems and Robotics Engineering*
+* **Gerardo Uriel Monroy Vázquez** (A01372286@itesm.mx) - *Digital Systems and Robotics Engineering*
+* **Emmanuel Hernández Olvera** (A01371852@itesm.mx) - *Digital Systems and Robotics Engineering*
 
 ## Bibliography
 
