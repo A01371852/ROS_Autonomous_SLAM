@@ -58,7 +58,7 @@ A reliable internet connection is needed. The commands are run in a bash termina
 
 #### Installing ROS
 
-Once Ubuntu 16.04 has been installed in both the UP Board and the external PC, the next step is to install the ROS distribution Kinetic Kame. This section is based on the more in-depth tutorial from the ROS Wiki: [Ubuntu install of ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu). For a more detailed explanation please read the provided link. **These steps are executed in both computers**
+Once Ubuntu 16.04 has been installed in both the UP Board and the external PC, the next step is to install the ROS distribution Kinetic Kame. This section is based on the more in-depth tutorial from the ROS Wiki: [Ubuntu install of ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu). For a more detailed explanation please read the provided link. These steps are executed in both computers.
 
 Setup your computer to accept software from packages.ros.org by modifying the file `sources.list`:
 ```
@@ -97,11 +97,12 @@ Up to this point, the core tools for ROS have been setup in the computer.
 
 This section is based on the ROS tutorial [Installing and Configuring Your ROS Environment](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment#Create_a_ROS_Workspace). 
 
-The current password of the UP Board is the following:
+**Note:** Ubuntu and ROS are already configured in the UP Board. The current password of the UP Board is the following:
+
 * Username: *realsense*
 * Password: *UPrealsense*
 
-However,
+However, if you are planning on building the project from scratch you can ignore this information and follow these steps.
 
 Create and build a catkin workspace:
 ```
@@ -156,7 +157,7 @@ $ cp ROS_Autonomous_SLAM/catkin_ws/sr300_throttle.launch ~/catkin_ws/
 Then we can setup the external PC.
 
 
-#### Setting up the External PC catkin workspace
+#### Setting up the external PC catkin workspace
 
 The process for setting up the catkin workspace in the external is slightly different from the previous section.
 
@@ -323,6 +324,8 @@ This will start the autonomous navigation and you should see the robot moving. O
 
 <p align="center">
   <img src="Evidences/nov_23_2019_goal_setting.png">
+</p>
+<p align="center">
   <img src="Evidences/nov_22_2019_autonomous_slam_cloudmap_2.png">
 </p>
 
