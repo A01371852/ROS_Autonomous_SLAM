@@ -42,9 +42,7 @@ The process for installing Ubuntu 16.04 in both devices is the following:
 
 Although a virtual machine with Ubuntu can be used in the external PC, is is recomended that Ubuntu runs natively in both computers. A recommended alternative to using a VM is [installing Ubuntu in a disk partition and using dual boot](https://www.tecmint.com/install-ubuntu-alongside-with-windows-dual-boot/).
 
-### Setup
-
-#### Hardware setup
+### Hardware setup
 
 Setting up the hardware is pretty straightforward. However, it is recommended to **check for any short circuit** between the terminals of the regulators before connecting the battery, and to **measure the output voltage** of the step-down regulator before connecting the UP Board.
 
@@ -54,11 +52,11 @@ After the security checks, the charged and balanced LiPo battery is connected to
   <img src="Diagrams/Electrical_design.png">
 </p>
 
-#### Software setup
+### Software setup
 
 A reliable internet connection is needed. The commands are run in a bash terminal (Ctrl+Alt+T).
 
-##### Installing ROS
+#### Installing ROS
 
 Once Ubuntu 16.04 has been installed in both the UP Board and the external PC, the next step is to install the ROS distribution Kinetic Kame. This section is based on the more in-depth tutorial from the ROS Wiki: [Ubuntu install of ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu). For a more detailed explanation please read the provided link. **These steps are executed in both computers**
 
@@ -95,7 +93,7 @@ $ sudo apt install python-rosinstall python-rosinstall-generator python-wstool b
 
 Up to this point, the core tools for ROS have been setup in the computer.
 
-##### Setting up the UP Board catkin workspace
+#### Setting up the UP Board catkin workspace
 
 This section is based on the ROS tutorial [Installing and Configuring Your ROS Environment](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment#Create_a_ROS_Workspace). 
 
@@ -147,7 +145,7 @@ $ cp ROS_Autonomous_SLAM/catkin_ws/sr300_throttle.launch ~/catkin_ws/
 Then we can setup the external PC.
 
 
-##### Setting up the External PC catkin workspace
+#### Setting up the External PC catkin workspace
 
 The process for setting up the catkin workspace in the external is slightly different from the previous section.
 
@@ -192,13 +190,13 @@ $ catkin_make -j1
 
 RTAB-Map is now built. After this your external PC should be ready for the Network setup.
 
-#### Network setup
+### Network setup
 
 This system is designed to run inside a Local Network (LAN) using a TRENDnet N300 Wireless Router. You might be able to use a different router, however it might involve changing the configuration of the X80 wireless module, which is not recommended as it might compromise the functioning of the robot.
 
 For this tutorial the **router** labeled as **"X80/2"** was used. Other routers might have a different username or password, or even a different configuration. Also, the **robot** that was used is labeled as **"X80/3"** with the static IP 192.168.0.203. The IP of the robot by default is printed underneath the chassis.
 
-##### Setting up the DHCP list
+#### Setting up the DHCP list
 
 From a computer with WiFi, connect to the newtwork with the following configuration:
 
@@ -212,7 +210,7 @@ To change the router configuration access this IP from a web browser: http://192
 
 Click on *Main* and look for the DHCP List. To avoid further difficulties it is recommended to set static IPs for the two computers to be used. In the *Dynamic DHCP List* you might see your computer's name, IP and MAC addresses. Copy them on the text-boxes above and click *Add* to make them static. The same information may now be displayed in the *Static DHCP List*. You may now connect the other computer to the same network and add it to the static list as well.
 
-##### Connecting the X80
+#### Connecting the X80
 
 If everything is working properly the DrRobot X80 will automatically connect to the *dri* network, as it is configured to do so by default. You can verify this by doing a ping test:
 ```
@@ -228,7 +226,7 @@ From 192.168.0.101 icmp_seq=10 Destination Host Unreachable
 ```
 The console will continue on printing messages indefinitely, so you can kill the proccess with Ctrl+C anytime.
 
-##### Setting up your ROS environment variables
+#### Setting up your ROS environment variables
 
 As explained in the ROS [Network Setup tutorial](http://wiki.ros.org/ROS/NetworkSetup#Single_machine_configuration), the environment variables `ROS_HOSTNAME` and `ROS_IP` have to be configured in all the computers within the LAN.
 
@@ -254,7 +252,7 @@ $ echo $ROS_IP
 $ echo $ROS_MASTER_URI
 ```
 
-##### Solving timing issues
+#### Synchronizing computers across network
 
 A common issue when doing remote mapping with RTAB-Map/RViz is the program complaining about extrapolation into the future or past, which in broad terms means that there exists a discrepancy in the system clocks for the machines across the network. As explained in the [Network Setup tutorial](http://wiki.ros.org/ROS/NetworkSetup#Timing_issues.2C_TF_complaining_about_extrapolation_into_the_future.3F) a solution is to use `ntpdate` to reduce this discrepancy:
 
