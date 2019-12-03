@@ -97,6 +97,12 @@ Up to this point, the core tools for ROS have been setup in the computer.
 
 This section is based on the ROS tutorial [Installing and Configuring Your ROS Environment](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment#Create_a_ROS_Workspace). 
 
+The current password of the UP Board is the following:
+* Username: *realsense*
+* Password: *UPrealsense*
+
+However,
+
 Create and build a catkin workspace:
 ```
 $ mkdir -p ~/catkin_ws/src
@@ -109,7 +115,12 @@ $ echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
 $ source ~/.bashrc
 ```
 
-After this, what is left is installing the Intel RealSense libaries in the UP Board as explained in their repository [Install Intel RealSense ROS from Sources](https://github.com/IntelRealSense/realsense-ros#step-3-install-intel-realsense-ros-from-sources):
+We will make sure RTAB-Map ROS is installed in the UP Board:
+```
+$ sudo apt-get install ros-kinetic-rtabmap-ros
+```
+
+Then we need to install the Intel RealSense libaries in the UP Board as explained in their repository [Install Intel RealSense ROS from Sources](https://github.com/IntelRealSense/realsense-ros#step-3-install-intel-realsense-ros-from-sources):
 
 
 Clone the latest Intel RealSense ROS repository into your catkin workspace:
@@ -120,7 +131,7 @@ $ cd realsense-ros/
 $ git checkout `git tag | sort -V | grep -P "^\d+\.\d+\.\d+" | tail -1`
 $ cd ..
 ```
-Build the libary:
+Build the library:
 ```
 $ catkin_init_workspace
 $ cd ..
@@ -275,13 +286,49 @@ After this, everything should be set to run the demo.
 
 ### Run the demo
 
+These are the steps to run the SLAM demo. First, make sure the X80 Robot, the UP Board and the external PC are all connected to the same LAN *dri*. You can do this by doing a ping from one device to the others. Once all the components are connected wirelessly follow these steps.
+
+#### Launching the camera node
+
+From the external PC, connect to the UP Board via ssh:
+```
+$ ssh -X realsense@192.168.0.103
+```
+This will ask for the UP Board password twice, once for logging in and once for synchronizing its clock. Then run the camera launch file:
+```
+$ roslaunch catkin_ws/sr300_throttle.launch angle:=0.0
+```
+The argument `angle` defines the inclination of the camera in the Y axis. The default value is 0.28 rad.
+You will see all the parameters and nodes that were launched in the console, followed by the message `RealSense Node Is Up!`. If the error `Region-of-interest is not implemented for this device!` appears you can ignore it as it is not relevant for this application.
+
+#### Launching the remote mapping and navigation nodes
+
+On a different terminal (outside ssh) run the remote mapping launch file:
+```
+$ roslaunch catkin_ws/x80_slam.launch
+```
+This will pop-up an RViz window. Wait for the console to display the message `/rtabmap/rtabmap subscribed to:  /camera/rgbd_image_relay` followed by the messages `rtabmap (1): Rate=1.00s, Limit=0.000s, RTAB-Map=0.8112s, Maps update=0.0032s pub=0.0163s (local map=1, WM=1)` appearing every second.
+
+Then, on RViz click on File > Open Config (Ctrl+O) and select the file `Rviz_config.rviz` inside your `catkin_ws` directory. This will load the layout for visualizing SLAM.
+
+#### Launching the autonomous SLAM node
+
+Finally, on a different terminal (outside ssh) run the following node:
+```
+$ rosrun X80_navigation send_goals_node
+```
+This will start the autonomous navigation and you should see the robot moving. On RViz you will see the current exploration goal as a green arrow, the global path as a green line and the odometry of the robot as a series of purple lines. The 3D mapcloud should be constructed as the robot moves, and the 2D gridmap should detect obstacles and display them as pink squares.
+
+**Note:** If the robot does not move it might not be receiving the navigation commands. Make sure you can ping it from your computer, and if it does not work run the demo all over again. If the robot will not move nevertheless, you might have to go through the Network setup again.
+
+
 
 
 ## Authors
 
-* **Marcos Eduardo Castañeda Guzman** (A01372581@itesm.mx) - *Digital Systems and Robotics Engineering*
-* **Gerardo Uriel Monroy Vázquez** (A01372286@itesm.mx) - *Digital Systems and Robotics Engineering*
-* **Emmanuel Hernández Olvera** (A01371852@itesm.mx) - *Digital Systems and Robotics Engineering*
+**Marcos Eduardo Castañeda Guzman** (A01372581@itesm.mx) - *Digital Systems and Robotics Engineering*
+**Gerardo Uriel Monroy Vázquez** (A01372286@itesm.mx) - *Digital Systems and Robotics Engineering*
+**Emmanuel Hernández Olvera** (A01371852@itesm.mx) - *Digital Systems and Robotics Engineering*
 
 ## Bibliography
 
