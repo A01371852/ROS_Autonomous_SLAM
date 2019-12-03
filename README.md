@@ -66,34 +66,28 @@ Setup your computer to accept software from packages.ros.org by modifying the fi
 ```
 $ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 ```
-
 Setup the keys:
 ```
 $ sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 ```
-
 Make sure your package index is up-to-date:
 ```
 $ sudo apt-get update
 ```
-
 Perform a ROS Kinetic Kame full installation:
 ```
 $ sudo apt-get install ros-kinetic-desktop-full
 ```
-
 Initialize rosdep:
 ```
 $ sudo rosdep init
 $ rosdep update
 ```
-
 Setup your ROS environment variables to be automatically added to your bash session every time a new shell is launched:
 ```
 $ echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
 $ source ~/.bashrc
 ```
-
 Install other dependencies for building ROS packages:
 ```
 $ sudo apt install python-rosinstall python-rosinstall-generator python-wstool build-essential
@@ -101,55 +95,102 @@ $ sudo apt install python-rosinstall python-rosinstall-generator python-wstool b
 
 Up to this point, the core tools for ROS have been setup in the computer.
 
+##### Setting up the UP Board catkin workspace
 
-##### Setting up the Catkin Workspace
+This section is based on the ROS tutorial [Installing and Configuring Your ROS Environment](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment#Create_a_ROS_Workspace). 
 
-
-
-:
+Create and build a catkin workspace:
 ```
-$ 
+$ mkdir -p ~/catkin_ws/src
+$ cd ~/catkin_ws/
+$ catkin_make
 ```
-
-:
+Add `setup.bash` file to your bash session so that it is sourced every time a new shell is launched:
 ```
-$ 
-```
-
-:
-```
-$ 
+$ echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
+$ source ~/.bashrc
 ```
 
-:
+After this, what is left is installing the Intel RealSense libaries in the UP Board as explained in their repository [Install Intel RealSense ROS from Sources](https://github.com/IntelRealSense/realsense-ros#step-3-install-intel-realsense-ros-from-sources):
+
+
+Clone the latest Intel RealSense ROS repository into your catkin workspace:
 ```
-$ 
+$ cd ~/catkin_ws/src/
+$ git clone https://github.com/IntelRealSense/realsense-ros.git
+$ cd realsense-ros/
+$ git checkout `git tag | sort -V | grep -P "^\d+\.\d+\.\d+" | tail -1`
+$ cd ..
+```
+Build the libary:
+```
+$ catkin_init_workspace
+$ cd ..
+$ catkin_make clean
+$ catkin_make -DCATKIN_ENABLE_TESTING=False -DCMAKE_BUILD_TYPE=Release
+$ catkin_make install
 ```
 
-:
+After this, the RealSense ROS package should be installed. Next we need to copy the custom launch file for the camera:
+
+Clone **this** repository on a directory in your computer (i.e. `~/Documents`):
 ```
-$ 
+$ apt-get install git-core
+$ cd ~/Documents/
+$ git clone https://github.com/A01371852/ROS_Autonomous_SLAM.git
+```
+Copy the `sr300_throttle.launch` file into your `catkin_ws` directory:
+```
+$ cp ROS_Autonomous_SLAM/catkin_ws/sr300_throttle.launch ~/catkin_ws/
 ```
 
-:
+Then we can setup the external PC.
+
+
+##### Setting up the External PC catkin workspace
+
+The process for setting up the catkin workspace in the external is slightly different from the previous section.
+
+Clone **this** repository on a directory in your computer (i.e. `~/Documents`):
 ```
-$ 
+$ apt-get install git-core
+$ cd ~/Documents/
+$ git clone https://github.com/A01371852/ROS_Autonomous_SLAM.git
+```
+Copy the `catkin_ws` directory into your root directory:
+```
+$ cp -r ./ROS_Autonomous_SLAM/catkin_ws/ ~/
+```
+Build your catkin workspace:
+```
+$ cd ~/catkin_ws/
+$ catkin_make
+```
+Add `setup.bash` file to your bash session so that it is sourced every time a new shell is launched:
+```
+$ echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
+$ source ~/.bashrc
 ```
 
-:
+By now the catkin workspace of the external PC is set. However, an extra step might be needed to finish the setup since, on the date this tutorial was written, a component needed for this tutorial (`rtabmap_ros/rgbd_relay`) has not yet been released with the default RTAB-Map version. This issue might be solved in future RTAB-Map releases, but for now RTAB-Map needs to be [built from source](https://github.com/introlab/rtabmap_ros/tree/4646b99cbb5709f1dfb25f8b89784b265abf5dbe#build-from-source). For a more in-depth explanation about this process please visit the provided link. **This process might take a couple hours**, so keep it in mind.
+
+Install RTAB-Map standalone libraries. *Clone is done in the root directory, not in your catkin_ws*:
 ```
-$ 
+$ cd ~
+$ git clone https://github.com/introlab/rtabmap.git rtabmap
+$ cd rtabmap/build
+$ cmake ..  [<---double dots included]
+$ make
+$ sudo make install
+```
+Install RTAB-Map ros-pkg in your src folder of your Catkin workspace:
+```
+$ cd ~/catkin_ws
+$ git clone https://github.com/introlab/rtabmap_ros.git src/rtabmap_ros
+$ catkin_make -j1
 ```
 
-:
-```
-$ 
-```
-
-:
-```
-$ 
-```
+RTAB-Map is now built. After this your external PC should be ready for the Network setup.
 
 #### Network setup
 
@@ -179,15 +220,11 @@ $ ping 192.168.0.203
 ```
 If the output is similar to this, then the robot was successfully connected to the LAN:
 ```
-PING 192.168.0.203 (192.168.0.203) 56(84) bytes of data.
 64 bytes from 192.168.0.203: icmp_seq=1 ttl=64 time=6.59 ms
-...
 ```
 If, however, the output is similar to this, there is a problem with the WiFi module of the robot or the router is not configured properly:
 ```
-PING 192.168.0.203 (192.168.0.203) 56(84) bytes of data.
 From 192.168.0.101 icmp_seq=10 Destination Host Unreachable
-...
 ```
 The console will continue on printing messages indefinitely, so you can kill the proccess with Ctrl+C anytime.
 
@@ -219,10 +256,26 @@ $ echo $ROS_MASTER_URI
 
 ##### Solving timing issues
 
-A common issue when working doing remote mapping with RTAB-Map/RViz is the program complaining about extrapolation into the future or past, which in broad terms means that there exists a discrepancy in the system times for the machines across the network. As explained in the [Network Setup tutorial](http://wiki.ros.org/ROS/NetworkSetup#Timing_issues.2C_TF_complaining_about_extrapolation_into_the_future.3F), a solution is using ntpdate to reduce this discrepancy.
+A common issue when doing remote mapping with RTAB-Map/RViz is the program complaining about extrapolation into the future or past, which in broad terms means that there exists a discrepancy in the system clocks for the machines across the network. As explained in the [Network Setup tutorial](http://wiki.ros.org/ROS/NetworkSetup#Timing_issues.2C_TF_complaining_about_extrapolation_into_the_future.3F) a solution is to use `ntpdate` to reduce this discrepancy:
 
+Install ntpdate in both computers:
+```
+$ sudo apt-get install ntpdate
+```
+Synchronize both system clocks. This is done only **in one of the two computers**. In this example we are running these commands in the UP Board to synchronize its clock with that of the external PC:
+```
+$ echo "/etc/init.d/chrony stop" >> ~/.bashrc
+$ echo "sudo ntpdate -u 192.168.0.101" >> ~/.bashrc
+$ echo "/etc/init.d/chrony start" >> ~/.bashrc
+$ source ~/.bashrc
+```
+Now these commands will execute every time you open a new terminal on the UP Board. If the clocks are already synchronized whenever you open a new terminal you can skip it by pressing Ctrl+C. To verify that the process was sucessful this command should output a low discrepancy (less than 0.1 seg):
+```
+$ ntpdate -q 192.168.0.101
+```
+After this, everything should be set to run the demo.
 
-### Run the DEMO
+### Run the demo
 
 
 
