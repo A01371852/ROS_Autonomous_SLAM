@@ -56,11 +56,11 @@ After the security checks, the charged and balanced LiPo battery is connected to
 
 #### Software setup
 
-**These steps are executed in both computers. A reliable internet connection is needed.** The commands are run in a bash terminal (Ctrl + Alt + T).
+A reliable internet connection is needed. The commands are run in a bash terminal (Ctrl+Alt+T).
 
 ##### Installing ROS
 
-Once Ubuntu 16.04 has been installed in both the UP Board and the external PC, the next step is to install the ROS distribution Kinetic Kame. This section is based on the more in-depth tutorial from the ROS Wiki: [Ubuntu install of ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu). For a more detailed explanation please read the provided link.
+Once Ubuntu 16.04 has been installed in both the UP Board and the external PC, the next step is to install the ROS distribution Kinetic Kame. This section is based on the more in-depth tutorial from the ROS Wiki: [Ubuntu install of ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu). For a more detailed explanation please read the provided link. **These steps are executed in both computers**
 
 Setup your computer to accept software from packages.ros.org by modifying the file `sources.list`:
 ```
